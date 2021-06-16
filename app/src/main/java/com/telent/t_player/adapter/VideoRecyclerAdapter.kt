@@ -1,0 +1,58 @@
+package com.telent.t_player.adapter
+
+import android.content.Context
+import android.content.Intent
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.telent.t_player.R
+import com.telent.t_player.VideoActivity
+import com.telent.t_player.model.VideoModel
+import com.telent.t_player.model.Videos
+
+class VideoRecyclerAdapter(val context:Context, val itemList:ArrayList<VideoModel>):
+        RecyclerView.Adapter<VideoRecyclerAdapter.ViewHolder>() {
+    inner class ViewHolder(itemView:View):RecyclerView.ViewHolder(itemView){
+
+        val itemName:TextView = itemView.findViewById(R.id.txt_Title)
+        val itemImage:ImageView = itemView.findViewById(R.id.img_thumb)
+        val itemCount:TextView = itemView.findViewById(R.id.txt_duration)
+        val cView: androidx.cardview.widget.CardView = itemView.findViewById(R.id.cardView)
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val v = LayoutInflater.from(parent.context).inflate(R.layout.sing_row_video_item,parent,false)
+        return ViewHolder(v)
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val pic = itemList[position]
+        holder.itemName.text = pic.resName
+        holder.itemCount.text = pic.resId
+
+        Glide.with(context).load(pic.resUri).error(R.drawable.ic_baseline_music_video_24).into(holder.itemImage)
+
+        holder.cView.setOnClickListener {
+          //  val intent = Intent(context, VideoActivity::class.java)
+//            intent.putExtra("content_link",pic.resLink)
+//            intent.putExtra("resImage",pic.resImage)
+//            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        //    context.startActivity(intent)
+//            System.out.println(pic.resLink)
+
+       println(position)
+
+        }
+
+    }
+
+    override fun getItemCount(): Int {
+       return itemList.size
+
+    }
+
+}
