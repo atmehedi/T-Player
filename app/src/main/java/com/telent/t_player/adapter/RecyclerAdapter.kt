@@ -10,7 +10,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.telent.t_player.R
-import com.telent.t_player.VideoActivity
+import com.telent.t_player.activities.VideoActivity
 import com.telent.t_player.model.Videos
 
 class RecyclerAdapter(val context:Context,val itemList:ArrayList<Videos>):

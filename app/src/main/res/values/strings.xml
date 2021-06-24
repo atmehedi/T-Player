@@ -2,4 +2,14 @@
     <string name="app_name">T-Player</string>
     <string name="folder">folder</string>
     <string name="grating">Welcome to T-player</string>
+    <string name="folderTop">Folders</string>
+    <string name="rotate_displaye">rotate displaye</string>
+    <string name="display_scal">Display scal</string>
+    <string name="zoom">ZOOM</string>
+    <string name="fillToScreen">FILL TO SCREEN</string>
+    <string name="stretched">STRETCHED</string>
+    <string name="hundred">100%</string>
+    <string name="width">WIDTH FIT</string>
+    <string name="track_selection_title">Select tracks and subs</string>
+    <string name="subtitle">Subtitle</string>
 </resources>

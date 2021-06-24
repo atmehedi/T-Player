@@ -1,4 +1,4 @@
-package com.telent.t_player
+package com.telent.t_player.activities
 
 import android.Manifest
 import android.content.Intent
@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.telent.t_player.R
 
 
 class WelcomeActivity : AppCompatActivity() {
@@ -28,11 +29,11 @@ class WelcomeActivity : AppCompatActivity() {
                 ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), permission)
             }
         } else {
-            Handler().postDelayed({
-                val intent = Intent(this,MainActivity::class.java)
+
+                val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
                 finish()
-            },0)
+         
 
 
 

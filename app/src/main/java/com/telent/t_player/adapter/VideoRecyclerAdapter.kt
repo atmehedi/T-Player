@@ -10,9 +10,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.telent.t_player.R
-import com.telent.t_player.VideoActivity
+import com.telent.t_player.activities.PlayerActivity
 import com.telent.t_player.model.VideoModel
-import com.telent.t_player.model.Videos
 
 class VideoRecyclerAdapter(val context:Context, val itemList:ArrayList<VideoModel>):
         RecyclerView.Adapter<VideoRecyclerAdapter.ViewHolder>() {
@@ -37,12 +36,13 @@ class VideoRecyclerAdapter(val context:Context, val itemList:ArrayList<VideoMode
         Glide.with(context).load(pic.resUri).error(R.drawable.ic_baseline_music_video_24).into(holder.itemImage)
 
         holder.cView.setOnClickListener {
-          //  val intent = Intent(context, VideoActivity::class.java)
-//            intent.putExtra("content_link",pic.resLink)
-//            intent.putExtra("resImage",pic.resImage)
-//            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        //    context.startActivity(intent)
-//            System.out.println(pic.resLink)
+            val intent = Intent(context, PlayerActivity::class.java)
+            intent.putExtra("videoUri",pic.resUri)
+           intent.putExtra("videoName",pic.resName)
+            intent.putExtra("videoWidth",pic.resWidth)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+           context.startActivity(intent)
+            println(pic.resUri)
 
        println(position)
 

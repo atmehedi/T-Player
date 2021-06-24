@@ -10,4 +10,5 @@
     <color name="bg">#FFFFFFFF</color>
     <color name="txcolor">#0E0D0D</color>
     <color name="vdcolo">#5F4B4A</color>
+    <color name="toolbar">#DA0037</color>
 </resources>

@@ -30,9 +30,9 @@
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@+id/img_thumb"
                 android:textColor="@color/txcolor"
-                android:textSize="15sp"
+                android:textSize="18sp"
                 android:paddingStart="6dp"
-
+                android:layout_centerVertical="true"
                 />
 
             <TextView
