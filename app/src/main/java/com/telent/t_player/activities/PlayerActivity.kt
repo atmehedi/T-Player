@@ -2,8 +2,11 @@ package com.telent.t_player.activities
 
 import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
+import android.media.MediaCodecInfo
+import android.media.MediaCodecList
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.util.DisplayMetrics
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -15,15 +18,18 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON
+import com.google.android.exoplayer2.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
 import com.google.android.exoplayer2.audio.AudioAttributes
-import com.google.android.exoplayer2.source.TrackGroupArray
+import com.google.android.exoplayer2.mediacodec.MediaCodecRenderer
+import com.google.android.exoplayer2.mediacodec.MediaCodecSelector
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector.ParametersBuilder
-import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
+import com.google.android.exoplayer2.ui.BuildConfig
 import com.google.android.exoplayer2.ui.PlayerView
 import com.telent.t_player.R
-import com.telent.t_player.TrackSelectionDialog
+import com.telent.t_player.exo_content.TrackSelectionDialog
 
 
 class PlayerActivity : AppCompatActivity(),View.OnClickListener,Player.Listener {
@@ -32,6 +38,7 @@ class PlayerActivity : AppCompatActivity(),View.OnClickListener,Player.Listener 
     lateinit var player:SimpleExoPlayer
     lateinit var btnScale:ImageView
     lateinit var rotate:ImageView
+    lateinit var back:ImageView
     var flag = false
     var vidUri: String?="null"
     var vidName: String?="null"
@@ -66,28 +73,43 @@ class PlayerActivity : AppCompatActivity(),View.OnClickListener,Player.Listener 
            println("something wrong with intent")
        }
 
+
         //track selection
 if (savedInstanceState==null){
     val builder = ParametersBuilder( /* context= */this)
     trackSelectorParameters = builder.build()
 
 }
-        trackSelector = DefaultTrackSelector(this)
+        trackSelector = DefaultTrackSelector(this) //Audio track selector
 
-      player = SimpleExoPlayer.Builder(this).setTrackSelector(trackSelector).build()
+        val loadControl = DefaultLoadControl()
+       val renderersFactory = DefaultRenderersFactory(this)
+
+
+        player = SimpleExoPlayer.Builder(this,renderersFactory)
+                .setTrackSelector(trackSelector)
+                .setLoadControl(loadControl).build()
+
+        loadControl.shouldStartPlayback(player.currentPosition,1.0f,true,C.TIME_UNSET)
+
+
+
         playerview = findViewById(R.id.exoPlayerView)
         playerview.player = player
         videoTitle = playerview.findViewById(R.id.videoName)
         btnScale = playerview.findViewById(R.id.btn_fullscreen)
         rotate = playerview.findViewById(R.id.rotate)
         trackSelect = findViewById(R.id.audio_track)
+        back = playerview.findViewById(R.id.back)
         trackSelect.setOnClickListener(this)
+        back.setOnClickListener(this)
        //println(getRotation(this))
 
         val displayMetrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(displayMetrics)
         val width = displayMetrics.widthPixels
-       val vv = vidWidth?.toInt()//VIDEO WIDTH SIZE
+        val vv = vidWidth?.toInt()//VIDEO WIDTH SIZE
+
         if (vv != null) {
             requestedOrientation = if (vv>width){
                 ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
@@ -95,6 +117,9 @@ if (savedInstanceState==null){
                 ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
             }
         }
+
+
+
         var clickCount = 0
         btnScale.setOnClickListener {
             val view: View = LayoutInflater.from(this).inflate(R.layout.custom_toast, null)
@@ -167,6 +192,7 @@ if (savedInstanceState==null){
 
           }
       }
+
         player.setMediaItem(MediaItem.fromUri(vidUri.toString()))
         playUndisterbed()
 
@@ -178,12 +204,12 @@ if (savedInstanceState==null){
 
     }
 
-    private fun playUndisterbed() {
+    private fun playUndisterbed() {    //play alone system
         val audioAttributes: AudioAttributes = AudioAttributes.Builder()
                 .setUsage(C.USAGE_MEDIA)
                 .setContentType(C.CONTENT_TYPE_MOVIE)
                 .build()
-        player.setAudioAttributes(audioAttributes,true)
+        player.setAudioAttributes(audioAttributes, true)
     }
 
     override fun onPause() {
@@ -207,53 +233,10 @@ if (savedInstanceState==null){
             ) { dismissedDialog -> isShowingTrackSelectionDialog = false }
             trackSelectionDialog.show(supportFragmentManager,  /* tag= */null)
         }
+      if (v==back){
+          finish()
+      }
     }
-    override fun onTimelineChanged(timeline: Timeline, manifest: Any?, reason: Int) {
-
-    }
-
-    override fun onTracksChanged(trackGroups: TrackGroupArray, trackSelections: TrackSelectionArray) {
-
-    }
-
-    override fun onLoadingChanged(isLoading: Boolean) {
-
-    }
-
-
-    override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
-        //buffering check
-        if (playbackState == Player.STATE_BUFFERING){
-            println("Buffering...")
-        }else if(playbackState==Player.STATE_READY){
-           println("Ready!")
-        }
-    }
-
-    override fun onRepeatModeChanged(repeatMode: Int) {
-
-    }
-
-    override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
-
-    }
-
-    override fun onPlayerError(error: ExoPlaybackException) {
-
-    }
-
-    override fun onPositionDiscontinuity(reason: Int) {
-
-    }
-
-    override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {
-
-    }
-
-    override fun onSeekProcessed() {
-
-    }
-
 
 }
 

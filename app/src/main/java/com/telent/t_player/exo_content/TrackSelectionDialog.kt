@@ -1,4 +1,4 @@
-package com.telent.t_player
+package com.telent.t_player.exo_content
 
 import android.app.Dialog
 import android.content.DialogInterface
@@ -23,6 +23,7 @@ import com.google.android.exoplayer2.ui.TrackSelectionView
 import com.google.android.exoplayer2.ui.TrackSelectionView.TrackSelectionListener
 import com.google.android.exoplayer2.util.Assertions
 import com.google.android.material.tabs.TabLayout
+import com.telent.t_player.R
 import java.util.*
 
 
