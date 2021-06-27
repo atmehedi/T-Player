@@ -21,7 +21,7 @@
             android:layout_marginStart="20dp"
 
             android:layout_weight="1"
-            />
+            android:contentDescription="@string/back_to_home" />
         <TextView
             android:id="@+id/videoName"
             android:layout_width="0dp"
@@ -37,7 +37,7 @@
             android:layout_weight="2"
             android:id="@+id/audio_track"
             android:src="@drawable/exo_ic_audiotrack"
-            />
+            android:contentDescription="@string/videoname" />
 
     </LinearLayout>
 
@@ -63,7 +63,6 @@
             android:id="@+id/exo_progress"
             android:layout_marginTop="8dp"
             app:unplayed_color="#45424E"
-            app:buffered_color="#95989F"
             app:played_color="#FF0000"
             />
       <RelativeLayout
@@ -129,12 +128,14 @@
                 android:src="@drawable/ic_baseline_fast_forward_24"
                 android:contentDescription="@string/exo_controls_next_description"
                 />
+
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/btn_fullscreen"
                 android:src="@drawable/ic_baseline_fullscreen_24"
                 android:contentDescription="@string/display_scal" />
+
 
         </LinearLayout>
 

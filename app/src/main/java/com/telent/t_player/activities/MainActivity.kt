@@ -1,9 +1,13 @@
 package com.telent.t_player.activities
 
 import android.content.ContentResolver
+import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
 import android.database.Cursor
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.View
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -11,6 +15,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.telent.t_player.R
 import com.telent.t_player.adapter.RecyclerAdapter
 import com.telent.t_player.model.Videos
@@ -26,10 +31,13 @@ class MainActivity : AppCompatActivity() {
     lateinit var coordinator:CoordinatorLayout
     lateinit var frameLayout: FrameLayout
     lateinit var toolbar:Toolbar
+    lateinit var sharedPreferences: SharedPreferences
+    lateinit var fab:FloatingActionButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        sharedPreferences = getSharedPreferences(getString(R.string.shared_value_file), Context.MODE_PRIVATE)
         displayVideoList()
 
     }
@@ -38,16 +46,20 @@ class MainActivity : AppCompatActivity() {
             recyclerView = findViewById(R.id.recyclerView)
         coordinator = findViewById(R.id.coordinatorLayout)
         frameLayout = findViewById(R.id.frameLayout)
+        fab = findViewById(R.id.fab)
         toolbar = findViewById(R.id.toolBar)
         arraylistTitle = ArrayList<String>()
         arraylistId = HashMap<String, String> ()
         arraylistfid = HashMap<String, String> ()
+
         displayVideos()
         recyclerView.layoutManager = LinearLayoutManager(this)
        recyclerView.adapter = RecyclerAdapter(this,videoFl)
         recyclerView.setHasFixedSize(true)
 
         setUpToolbar()
+       folderName =  folderName.sortedBy { it }
+
 for( i in folderName){
     val aa = arraylistTitle.groupingBy { it }.eachCount().filter { it.value > 1 }
 
@@ -62,11 +74,28 @@ for( i in folderName){
 }
     }
     fun displayVideos(){
+        val check = sharedPreferences.getString("Uri",null)
+        if (check == null){
+            fab.visibility = View.GONE
+        }
+        fab.setOnClickListener{
+            val intent = Intent(this,PlayerActivity::class.java)
+            val uri2 = sharedPreferences.getString("Uri",null)
+            val videoName = sharedPreferences.getString("videoName","Video Name.mp4")
+            val videoWidth = sharedPreferences.getString("width",null)
+            val position = sharedPreferences.getString("position",null)
+            intent.putExtra("videoUri",uri2)
+            intent.putExtra("videoName",videoName)
+            intent.putExtra("videoWidth",videoWidth)
+            intent.putExtra("position",position)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
+        }
 
         val resolver: ContentResolver = contentResolver
         val uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-        val orderBy = MediaStore.Video.Media.DEFAULT_SORT_ORDER
-        val cursor: Cursor? = resolver.query(uri, null, null, null, orderBy)
+        val orderBy = MediaStore.Video.Media.DATE_MODIFIED
+        val cursor: Cursor? = resolver.query(uri, null, null, null, "$orderBy ASC")
 
         when {
             cursor == null -> {
@@ -109,5 +138,6 @@ for( i in folderName){
         //supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
     }
+
 
 }

@@ -42,7 +42,6 @@ class VideoRecyclerAdapter(val context:Context, val itemList:ArrayList<VideoMode
             intent.putExtra("videoWidth",pic.resWidth)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
            context.startActivity(intent)
-            println(pic.resUri)
 
        println(position)
 

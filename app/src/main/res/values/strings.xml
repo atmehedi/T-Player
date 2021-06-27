@@ -11,5 +11,9 @@
     <string name="hundred">100%</string>
     <string name="width">WIDTH FIT</string>
     <string name="track_selection_title">Select tracks and subs</string>
+    <string name="shared_value_file">shared_value_1</string>
     <string name="subtitle">Subtitle</string>
+    <string name="videoname">videoName</string>
+    <string name="back_to_home">back to home</string>
+    <string name="submit">button</string>
 </resources>

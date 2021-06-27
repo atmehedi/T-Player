@@ -96,9 +96,9 @@ class VideoActivity : AppCompatActivity() {
 
         val resolver: ContentResolver = contentResolver
         val uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-        val orderBy = MediaStore.Video.Media.DEFAULT_SORT_ORDER
+        val orderBy = MediaStore.Video.Media.DATE_MODIFIED
 
-        val cursor: Cursor? = resolver.query(uri, null, null, null, orderBy)
+        val cursor: Cursor? = resolver.query(uri, null, null, null, "$orderBy DESC")
 
         when {
             cursor == null -> {

@@ -1,12 +1,11 @@
 package com.telent.t_player.activities
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
-import android.media.MediaCodecInfo
-import android.media.MediaCodecList
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
 import android.util.DisplayMetrics
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -18,15 +17,10 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.exoplayer2.*
-import com.google.android.exoplayer2.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON
-import com.google.android.exoplayer2.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
 import com.google.android.exoplayer2.audio.AudioAttributes
-import com.google.android.exoplayer2.mediacodec.MediaCodecRenderer
-import com.google.android.exoplayer2.mediacodec.MediaCodecSelector
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector.ParametersBuilder
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
-import com.google.android.exoplayer2.ui.BuildConfig
 import com.google.android.exoplayer2.ui.PlayerView
 import com.telent.t_player.R
 import com.telent.t_player.exo_content.TrackSelectionDialog
@@ -34,18 +28,20 @@ import com.telent.t_player.exo_content.TrackSelectionDialog
 
 class PlayerActivity : AppCompatActivity(),View.OnClickListener,Player.Listener {
 
-    lateinit var playerview:PlayerView
-    lateinit var player:SimpleExoPlayer
-    lateinit var btnScale:ImageView
-    lateinit var rotate:ImageView
-    lateinit var back:ImageView
-    var flag = false
-    var vidUri: String?="null"
-    var vidName: String?="null"
-    var vidWidth: String?="null"
-    lateinit var videoTitle:TextView
-    lateinit var trackSelector:DefaultTrackSelector
-    lateinit var trackSelect:ImageView
+    private var flag = false
+    private var vidUri: String?="null"
+    private var vidName: String?="null"
+    private var vidWidth: String?="null"
+    private var position: String?="null"
+    private lateinit var playerview:PlayerView
+    private lateinit var player:SimpleExoPlayer
+    private lateinit var btnScale:ImageView
+    private lateinit var rotate:ImageView
+    private lateinit var back:ImageView
+    private lateinit var videoTitle:TextView
+    private lateinit var trackSelector:DefaultTrackSelector
+    private lateinit var trackSelect:ImageView
+    lateinit var sharedPreferences: SharedPreferences
     private var trackSelectorParameters: DefaultTrackSelector.Parameters? = null
     private var isShowingTrackSelectionDialog = false
 
@@ -56,6 +52,9 @@ class PlayerActivity : AppCompatActivity(),View.OnClickListener,Player.Listener 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
+
+        sharedPreferences = getSharedPreferences(getString(R.string.shared_value_file), Context.MODE_PRIVATE)
+
         //fullscreen codes
         window.setFlags(
                 WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager
@@ -65,6 +64,8 @@ class PlayerActivity : AppCompatActivity(),View.OnClickListener,Player.Listener 
            vidUri = intent.getStringExtra("videoUri")
            vidName = intent.getStringExtra("videoName")
            vidWidth = intent.getStringExtra("videoWidth")
+           position = intent.getStringExtra("position")
+
 
            if (vidUri==null){
                println("Uri given is null")
@@ -90,9 +91,7 @@ if (savedInstanceState==null){
                 .setTrackSelector(trackSelector)
                 .setLoadControl(loadControl).build()
 
-        loadControl.shouldStartPlayback(player.currentPosition,1.0f,true,C.TIME_UNSET)
-
-
+        //loadControl.shouldStartPlayback(player.currentPosition,1.0f,true,C.TIME_UNSET)
 
         playerview = findViewById(R.id.exoPlayerView)
         playerview.player = player
@@ -133,6 +132,7 @@ if (savedInstanceState==null){
                     text.text = getString(R.string.zoom)
                     toast.show()
                     btnScale.setImageResource(R.drawable.ic_baseline_zoom_out_map_24)
+
 
                 }
                 1 -> {
@@ -194,6 +194,11 @@ if (savedInstanceState==null){
       }
 
         player.setMediaItem(MediaItem.fromUri(vidUri.toString()))
+
+        if (position !=null){
+            player.seekTo(position!!.toLong())
+        }
+
         playUndisterbed()
 
         videoTitle.text = vidName
@@ -230,13 +235,29 @@ if (savedInstanceState==null){
             isShowingTrackSelectionDialog = true
             val trackSelectionDialog = TrackSelectionDialog.createForTrackSelector(
                     trackSelector  /* onDismissListener= */
-            ) { dismissedDialog -> isShowingTrackSelectionDialog = false }
+            ) { isShowingTrackSelectionDialog = false }
             trackSelectionDialog.show(supportFragmentManager,  /* tag= */null)
         }
       if (v==back){
+          pref()
           finish()
       }
     }
 
+    override fun onBackPressed() {
+       pref()
+        super.onBackPressed()
+    }
+
+    private fun pref() {
+       val uri1 = sharedPreferences.getString("Uri",null)
+        val position = sharedPreferences.getString("position","100")
+        println("$uri1 and $position")
+
+        sharedPreferences.edit().putString("Uri",vidUri).apply()
+        sharedPreferences.edit().putString("videoName",vidName).apply()
+        sharedPreferences.edit().putString("width",vidWidth).apply()
+        sharedPreferences.edit().putString("position", player.currentPosition.toString()).apply()
+    }
 }
 
