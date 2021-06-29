@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:ignore="MissingDefaultResource">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="380dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        app:cardCornerRadius="11dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <RelativeLayout
+            android:id="@+id/layout_root"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/custom_border"
+            >
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:background="@color/bg">
+
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="20dp"
+                    android:fontFamily="monospace"
+                    android:padding="10dp"
+                    android:text="@string/about_the_app"
+                    android:textColor="@color/txcolor"
+                    android:textSize="34sp" />
+                <TextView
+                    android:layout_below="@+id/title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/name_t_player"
+                    android:textColor="@color/txcolor"
+                    android:padding="5dp"
+                    android:textSize="24sp"
+                    android:id="@+id/appName"
+                    />
+                <TextView
+                    android:layout_below="@+id/appName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/version_1_0"
+                    android:textColor="@color/txcolor"
+                    android:padding="5dp"
+                    android:textSize="24sp"
+                    android:id="@+id/version"
+                    />
+                <TextView
+                    android:layout_below="@+id/version"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/developer_a_t_mehedi_hassan"
+                    android:textColor="@color/txcolor"
+                    android:padding="5dp"
+                    android:textSize="24sp"
+                    android:id="@+id/myname"
+                    />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/myname"
+                    >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/ok"
+                        android:text="@string/ok"
+                       android:layout_centerHorizontal="true"
+                        android:textSize="34sp"
+                        android:layout_marginTop="20dp"
+                        android:background="@color/toolbar"
+                        android:textColor="@color/txcolor"
+                        />
+
+                </RelativeLayout>
+            </RelativeLayout>
+        </RelativeLayout>
+
+
+    </androidx.cardview.widget.CardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

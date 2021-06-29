@@ -27,4 +27,14 @@
     <string name="Mehedi">A T MEHEDI HASSAN</string>
     <string name="t_player_1_0">T-PLAYER 1.0</string>
     <string name="shared_value_focus">shared_value_focus_1</string>
+    <string name="exit_from_the_t_player">EXIT FROM THE T-PLAYER</string>
+    <string name="exit">exit</string>
+    <string name="are_you_sure">Are you sure ?</string>
+    <string name="no">NO</string>
+    <string name="yes">YES</string>
+    <string name="about_the_app">About The App</string>
+    <string name="name_t_player">Name:-T-Player</string>
+    <string name="version_1_0">Version:- 1.0</string>
+    <string name="developer_a_t_mehedi_hassan">Developer:-A T Mehedi Hassan</string>
+    <string name="ok">OK</string>
 </resources>

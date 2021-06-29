@@ -4,8 +4,10 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.OpenableColumns
 import android.util.DisplayMetrics
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -53,6 +55,24 @@ class PlayerActivity : AppCompatActivity(),View.OnClickListener,Player.Listener 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
+
+        val data: Uri? = intent?.data
+        if (intent?.type?.startsWith("video/")==true){
+            println("video found")
+
+
+        }
+
+            val returnCursor = data?.let { contentResolver.query(it, null, null, null, null) }
+            val nameIndex = returnCursor?.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            returnCursor?.moveToFirst()
+            val fileName = nameIndex?.let { returnCursor.getString(it) }
+             println(fileName)
+            returnCursor?.close()
+
+
+
+
 
         sharedPreferences = getSharedPreferences(getString(R.string.shared_value_file), Context.MODE_PRIVATE)
         focusCheck = getSharedPreferences(getString(R.string.shared_value_focus),Context.MODE_PRIVATE)
@@ -194,6 +214,9 @@ if (savedInstanceState==null){
           }
       }
 
+        if (data!=null){
+            vidUri = data.toString()
+        }
         player.setMediaItem(MediaItem.fromUri(vidUri.toString()))
 
         if (position !=null){
@@ -204,6 +227,9 @@ if (savedInstanceState==null){
             playUndisterbed()
         }
 
+        if (fileName!==null){
+            vidName = fileName
+        }
 
         videoTitle.text = vidName
         player.prepare()

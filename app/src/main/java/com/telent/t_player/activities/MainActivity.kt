@@ -1,20 +1,26 @@
 package com.telent.t_player.activities
 
+import android.app.Dialog
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.database.Cursor
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.os.Handler
 import android.provider.MediaStore
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
+import android.view.*
 import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -30,16 +36,24 @@ class MainActivity : AppCompatActivity() {
     lateinit var arraylistfid:HashMap<String, String>
     lateinit var folderName:List<String>
     private var videoFl = arrayListOf<Videos>()
+    private var doubleBackToExitPressedOnce = false
     lateinit var coordinator:CoordinatorLayout
     lateinit var toolbar:Toolbar
     lateinit var sharedPreferences: SharedPreferences
     lateinit var fab:FloatingActionButton
     lateinit var frameLayout: FrameLayout
+    lateinit var yes:TextView
+    lateinit var no:TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        sharedPreferences = getSharedPreferences(getString(R.string.shared_value_file), Context.MODE_PRIVATE)
+        sharedPreferences = getSharedPreferences(
+                getString(R.string.shared_value_file),
+                Context.MODE_PRIVATE
+        )
+
+
 
         displayVideoList()
 
@@ -62,6 +76,7 @@ class MainActivity : AppCompatActivity() {
 
         setUpToolbar()
        folderName =  folderName.sortedBy { it }
+
 
 for( i in folderName){
     val aa = arraylistTitle.groupingBy { it }.eachCount().filter { it.value > 1 }
@@ -150,20 +165,61 @@ for( i in folderName){
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.settings -> {
-                startActivity(Intent(this,SettingsActivity::class.java))
+                startActivity(Intent(this, SettingsActivity::class.java))
             }
             R.id.about -> {
-                println("About")
+                val about = Dialog(this)
+                about.requestWindowFeature(Window.FEATURE_NO_TITLE)
+                about.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                about.setContentView(R.layout.about_dialog)
+
+                val ok = about.findViewById<TextView>(R.id.ok)
+                ok.setOnClickListener {
+                    about.dismiss()
+                }
+                about.create()
+                about.show()
+
+
             }
             R.id.exit -> {
-                println("exit")
+
+                val dialog = Dialog(this)
+
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+                dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                dialog.setContentView(R.layout.alert_dialog)
+                yes = dialog.findViewById(R.id.Yes)
+                no = dialog.findViewById(R.id.No)
+
+                yes.setOnClickListener {
+                    finish()
+
+                }
+                no.setOnClickListener {
+                    dialog.dismiss()
+                }
+                dialog.create()
+                dialog.show()
+
+
             }
         }
 
         return super.onOptionsItemSelected(item)
     }
 
+    override fun onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed()
+            return
+        }
 
+        doubleBackToExitPressedOnce = true
+        Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show()
+
+        Handler().postDelayed(Runnable { doubleBackToExitPressedOnce = false }, 2000)
+    }
 
 
 }
