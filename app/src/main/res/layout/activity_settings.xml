@@ -4,9 +4,9 @@ xmlns:app="http://schemas.android.com/apk/res-auto"
 xmlns:tools="http://schemas.android.com/tools"
 android:layout_width="match_parent"
 android:layout_height="match_parent"
-tools:context=".activities.MainActivity"
+tools:context=".activities.SettingsActivity"
 android:id="@+id/drawerLayout"
-    android:background="@color/bg"
+android:background="@color/bg"
     >
 
 <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -21,12 +21,11 @@ android:id="@+id/drawerLayout"
         android:elevation="0dp"
         >
         <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolBar"
+            android:id="@+id/toolbarSettings"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/toolbar"
             android:minHeight="?attr/actionBarSize"
-            app:menu="@menu/overflow_menu"
             android:theme="@style/ThemeOverlay.AppCompat.Dark"
 
             />
@@ -37,22 +36,20 @@ android:id="@+id/drawerLayout"
         android:layout_height="fill_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         >
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/F_mode"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-
-           />
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end|bottom"
-            android:src="@drawable/ic_baseline_play_arrow_24"
-            android:contentDescription="@string/submit"
-            android:layout_marginBottom="60dp"
-            android:layout_marginEnd="20dp"
+            android:text="@string/focus_mode"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:textColor="@color/txcolor"
             />
+
     </FrameLayout>
 
 

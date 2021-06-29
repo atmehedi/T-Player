@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="grating">Welcome to T-player</string>
+    <string name="focus_mode">Focus Mode</string>
+    <string name="settings">settings</string>
+    <string name="option_1">Settings</string>
+    <string name="option_2">About</string>
+    <string name="option_3">Exit</string>
+    <string name="createdby">Created By</string>
+    <string name="Mehedi">A T MEHEDI HASSAN</string>
+    <string name="t_player_1_0">T-PLAYER 1.0</string>
+    <string name="shared_value_focus">shared_value_focus_1</string>
 </resources>

@@ -41,6 +41,7 @@ class PlayerActivity : AppCompatActivity(),View.OnClickListener,Player.Listener 
     private lateinit var videoTitle:TextView
     private lateinit var trackSelector:DefaultTrackSelector
     private lateinit var trackSelect:ImageView
+    private lateinit var focusCheck:SharedPreferences
     lateinit var sharedPreferences: SharedPreferences
     private var trackSelectorParameters: DefaultTrackSelector.Parameters? = null
     private var isShowingTrackSelectionDialog = false
@@ -54,6 +55,7 @@ class PlayerActivity : AppCompatActivity(),View.OnClickListener,Player.Listener 
         setContentView(R.layout.activity_player)
 
         sharedPreferences = getSharedPreferences(getString(R.string.shared_value_file), Context.MODE_PRIVATE)
+        focusCheck = getSharedPreferences(getString(R.string.shared_value_focus),Context.MODE_PRIVATE)
 
         //fullscreen codes
         window.setFlags(
@@ -91,7 +93,6 @@ if (savedInstanceState==null){
                 .setTrackSelector(trackSelector)
                 .setLoadControl(loadControl).build()
 
-        //loadControl.shouldStartPlayback(player.currentPosition,1.0f,true,C.TIME_UNSET)
 
         playerview = findViewById(R.id.exoPlayerView)
         playerview.player = player
@@ -198,8 +199,11 @@ if (savedInstanceState==null){
         if (position !=null){
             player.seekTo(position!!.toLong())
         }
+        val focusMode = focusCheck.getString("checked","Unchecked")
+        if (focusMode =="checked"){
+            playUndisterbed()
+        }
 
-        playUndisterbed()
 
         videoTitle.text = vidName
         player.prepare()
@@ -219,15 +223,31 @@ if (savedInstanceState==null){
 
     override fun onPause() {
         super.onPause()
+     player.pause()
+
+
+    }
+
+    override fun onDestroy() {
         player.playWhenReady = false
         player.playbackState
         player.release()
+        super.onDestroy()
+
     }
 
     override fun onRestart() {
         super.onRestart()
         player.playWhenReady = true
         player.playbackState
+
+    }
+
+    override fun onResume() {
+        player.playWhenReady=true
+        //player.play()
+        super.onResume()
+
     }
   override fun onClick(v: View?) {
         if (v === trackSelect && !isShowingTrackSelectionDialog

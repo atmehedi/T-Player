@@ -19,7 +19,6 @@
             android:layout_height="match_parent"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="20dp"
-
             android:layout_weight="1"
             android:contentDescription="@string/back_to_home" />
         <TextView
@@ -62,7 +61,6 @@
             android:layout_height="wrap_content"
             android:id="@+id/exo_progress"
             android:layout_marginTop="8dp"
-            app:unplayed_color="#45424E"
             app:played_color="#FF0000"
             />
       <RelativeLayout
@@ -135,7 +133,6 @@
                 android:id="@+id/btn_fullscreen"
                 android:src="@drawable/ic_baseline_fullscreen_24"
                 android:contentDescription="@string/display_scal" />
-
 
         </LinearLayout>
 

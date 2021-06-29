@@ -4,7 +4,7 @@
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:allowBackup="true"
@@ -13,9 +13,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.TPlayer">
+        <activity android:name=".activities.SettingsActivity"></activity>
         <activity
             android:name=".activities.PlayerActivity"
-            android:configChanges="orientation|screenSize|layoutDirection|keyboardHidden"/>
+            android:configChanges="orientation|screenSize|layoutDirection|keyboardHidden" />
         <activity android:name=".activities.WelcomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

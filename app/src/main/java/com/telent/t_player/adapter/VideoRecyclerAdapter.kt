@@ -13,7 +13,7 @@ import com.telent.t_player.R
 import com.telent.t_player.activities.PlayerActivity
 import com.telent.t_player.model.VideoModel
 
-class VideoRecyclerAdapter(val context:Context, val itemList:ArrayList<VideoModel>):
+class VideoRecyclerAdapter(val context:Context, private val itemList:ArrayList<VideoModel>):
         RecyclerView.Adapter<VideoRecyclerAdapter.ViewHolder>() {
     inner class ViewHolder(itemView:View):RecyclerView.ViewHolder(itemView){
 
@@ -43,7 +43,6 @@ class VideoRecyclerAdapter(val context:Context, val itemList:ArrayList<VideoMode
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
            context.startActivity(intent)
 
-       println(position)
 
         }
 
