@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="grating">Welcome to T-player</string>
+    <string name="grating">T-player</string>
     <string name="focus_mode">Focus Mode</string>
     <string name="settings">settings</string>
     <string name="option_1">Settings</string>

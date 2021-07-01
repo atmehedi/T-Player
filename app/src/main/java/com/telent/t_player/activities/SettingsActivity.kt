@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.MenuItem
 import android.widget.Switch
 import android.widget.Toolbar
 import com.google.android.material.switchmaterial.SwitchMaterial
@@ -40,6 +41,16 @@ class SettingsActivity : AppCompatActivity() {
     private fun setUpToolbar(){
         setSupportActionBar(settingToolbar)
         supportActionBar?.title = getString(R.string.option_1)
+        supportActionBar?.setHomeButtonEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id =  item.itemId
+        if (id ==android.R.id.home){
+           finish()
+        }
+        return super.onOptionsItemSelected(item)
 
     }
 }

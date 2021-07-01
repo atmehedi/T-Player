@@ -67,7 +67,7 @@
                     android:text="@string/developer_a_t_mehedi_hassan"
                     android:textColor="@color/txcolor"
                     android:padding="5dp"
-                    android:textSize="24sp"
+                    android:textSize="20sp"
                     android:id="@+id/myname"
                     />
 

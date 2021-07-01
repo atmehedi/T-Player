@@ -44,7 +44,7 @@ class PlayerActivity : AppCompatActivity(),View.OnClickListener,Player.Listener 
     private lateinit var trackSelector:DefaultTrackSelector
     private lateinit var trackSelect:ImageView
     private lateinit var focusCheck:SharedPreferences
-    lateinit var sharedPreferences: SharedPreferences
+    private lateinit var sharedPreferences: SharedPreferences
     private var trackSelectorParameters: DefaultTrackSelector.Parameters? = null
     private var isShowingTrackSelectionDialog = false
 
@@ -55,6 +55,15 @@ class PlayerActivity : AppCompatActivity(),View.OnClickListener,Player.Listener 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
+
+        window.decorView.setOnSystemUiVisibilityChangeListener { visibility ->
+            if (visibility and View.SYSTEM_UI_FLAG_FULLSCREEN == 0) {
+          window.decorView.apply {
+              systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+              //Hide navigation while not touching
+          }
+            }
+        }
 
         val data: Uri? = intent?.data
         if (intent?.type?.startsWith("video/")==true){

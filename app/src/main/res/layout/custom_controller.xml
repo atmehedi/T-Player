@@ -62,6 +62,8 @@
             android:id="@+id/exo_progress"
             android:layout_marginTop="8dp"
             app:played_color="#FF0000"
+            app:unplayed_color="#444444"
+            app:buffered_color="#444444"
             />
       <RelativeLayout
           android:layout_width="match_parent"

@@ -49,9 +49,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         sharedPreferences = getSharedPreferences(
-                getString(R.string.shared_value_file),
-                Context.MODE_PRIVATE
-        )
+                getString(R.string.shared_value_file),Context.MODE_PRIVATE)
 
 
 

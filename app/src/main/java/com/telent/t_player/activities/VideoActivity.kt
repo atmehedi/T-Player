@@ -1,15 +1,20 @@
 package com.telent.t_player.activities
 
 import android.content.ContentResolver
+import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
 import android.database.Cursor
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.View
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.telent.t_player.R
 import com.telent.t_player.adapter.VideoRecyclerAdapter
 import com.telent.t_player.model.VideoModel
@@ -25,12 +30,18 @@ class VideoActivity : AppCompatActivity() {
     lateinit var coordinator: CoordinatorLayout
     lateinit var frameLayout: FrameLayout
     lateinit var toolbar: Toolbar
+    lateinit var fab2: FloatingActionButton
     var folderId: String? = "folderId"
     var bucketTitle = "Internal Storage"
+    lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_video)
+        sharedPreferences = getSharedPreferences(
+                getString(R.string.shared_value_file),
+                Context.MODE_PRIVATE
+        )
 
         listMain()
 
@@ -86,6 +97,7 @@ class VideoActivity : AppCompatActivity() {
         coordinator = findViewById(R.id.coordinatorLayout)
         frameLayout = findViewById(R.id.frameLayout)
         toolbar = findViewById(R.id.toolBar)
+        fab2 = findViewById(R.id.fab2)
         videosList()
         videoRecyclerView.layoutManager = LinearLayoutManager(this)
         videoRecyclerView.adapter = VideoRecyclerAdapter(this, videoAr)
@@ -93,6 +105,27 @@ class VideoActivity : AppCompatActivity() {
     }
 
     fun videosList() {
+        val check = sharedPreferences.getString("Uri", null)
+        if (check == null){
+            fab2.visibility = View.GONE
+        }
+        fab2.setOnClickListener{
+            val intent = Intent(this, PlayerActivity::class.java)
+            val uri2 = sharedPreferences.getString("Uri", null)
+            val videoName = sharedPreferences.getString("videoName", "Video Name.mp4")
+            val videoWidth = sharedPreferences.getString("width", null)
+            val position = sharedPreferences.getString("position", null)
+            intent.putExtra("videoUri", uri2)
+            intent.putExtra("videoName", videoName)
+            intent.putExtra("videoWidth", videoWidth)
+            intent.putExtra("position", position)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
+        }
+
+
+
+
 
         val resolver: ContentResolver = contentResolver
         val uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
