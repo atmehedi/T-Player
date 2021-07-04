@@ -2,23 +2,25 @@ package com.telent.t_player.activities
 
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
-import android.widget.Switch
-import android.widget.Toolbar
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.telent.t_player.R
 
-class SettingsActivity : AppCompatActivity() {
+
+class SettingsActivity : AppCompatActivity(){
     lateinit var settingToolbar:androidx.appcompat.widget.Toolbar
     lateinit var focusMode:SwitchMaterial
     lateinit var sharedPreferences: SharedPreferences
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
         settingToolbar = findViewById(R.id.toolbarSettings)
         focusMode = findViewById(R.id.F_mode)
+
         sharedPreferences = getSharedPreferences(getString(R.string.shared_value_focus),Context.MODE_PRIVATE)
         focusMode.isUseMaterialThemeColors=true
         val focusCheck = sharedPreferences.getString("checked","Unchecked")
@@ -37,6 +39,8 @@ class SettingsActivity : AppCompatActivity() {
 
      }
         setUpToolbar()
+
+
     }
     private fun setUpToolbar(){
         setSupportActionBar(settingToolbar)
@@ -53,4 +57,7 @@ class SettingsActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
 
     }
+
+
+
 }

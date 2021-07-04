@@ -51,6 +51,8 @@ android:background="@color/bg"
             android:textColor="@color/txcolor"
             />
 
+
+
     </FrameLayout>
 
 
