@@ -12,12 +12,25 @@
     android:id="@+id/root"
     >
 
+    <TextView
+        android:id="@+id/centerText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:fontFamily="monospace"
+        android:text="@string/app_name"
+        android:textColor="@color/white"
+        android:textSize="35sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        />
+
         <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:orientation="horizontal"
         android:weightSum="10"
-
+        android:background="@color/controlsBag"
         >
         <ImageView
             android:id="@+id/back"
@@ -42,6 +55,7 @@
             android:layout_height="match_parent"
             android:layout_weight="2"
             android:id="@+id/audio_track"
+            android:layout_marginTop="3dp"
             android:src="@drawable/exo_ic_audiotrack"
             android:contentDescription="@string/videoname" />
 
@@ -88,14 +102,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/exo_progress"
-            android:layout_marginTop="8dp"
             app:played_color="#FF0000"
             app:unplayed_color="#444444"
             app:buffered_color="#444444"
             />
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:background="@color/controlsBag"
+            >
 
         <LinearLayout
             android:layout_centerHorizontal="true"
@@ -175,6 +190,36 @@
         android:rotation="270"
         android:visibility="gone"
         />
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/info"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        >
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/brightnessIcon"
+            android:src="@drawable/ic_baseline_brightness_medium_24"
+            android:contentDescription="@string/brightnesslevel"
+            android:layout_centerVertical="true"
+
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtInfo"
+            android:text="@string/_30"
+            android:textSize="45sp"
+            android:layout_marginStart="10dp"
+            android:layout_toEndOf="@id/brightnessIcon"
+            />
+
+
+    </RelativeLayout>
+
+
     <ProgressBar
         android:visibility="gone"
         android:id="@+id/progressBar2"
@@ -186,5 +231,56 @@
         android:layout_centerVertical="true"
         android:rotation="270"
         />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
+        android:orientation="horizontal"
+        tools:ignore="RelativeOverlap,UseCompoundDrawables"
+        android:id="@+id/forLayout"
+        android:visibility="gone"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/_30"
+            android:textSize="46sp"
+            />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_fast_forward_24"
+            android:layout_marginEnd="200dp"
+            android:contentDescription="@string/rewinding" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentStart="true"
+        android:orientation="horizontal"
+        tools:ignore="RelativeOverlap,UseCompoundDrawables"
+        android:id="@+id/rewLayout"
+        android:visibility="gone"
+        >
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_fast_rewind_24"
+            android:layout_marginStart="200dp"
+            android:contentDescription="@string/rewinding" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/__30"
+            android:textSize="46sp"
+
+            />
+
+    </LinearLayout>
+
+
 
 </RelativeLayout>

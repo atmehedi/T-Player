@@ -8,6 +8,7 @@ import android.graphics.Point
 import android.media.AudioManager
 import android.net.Uri
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.provider.OpenableColumns
 import android.util.DisplayMetrics
 import android.util.Log
@@ -26,6 +27,7 @@ import kotlin.math.ceil
 
 
 class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listener, View.OnTouchListener, GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
+
 
     private var flag = false
     private var vidUri: String? = "null"
@@ -56,27 +58,43 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
     private lateinit var soundsBar: ProgressBar
     private var DEBUG_TAG = "Gestures"
     private lateinit var totalLayout: RelativeLayout
+
     private var basex = 0f
     private var basey = 0f
     private var diffX = 0f
     private var diffY = 0f
     private var sWidth = 0
     private var sHeight: Int = 0
+
     private var leftClicked = false
     private var rightClicked = false
     private var brightness = 0.0f
     private var pBright = 0.0f
     private var oldBrightness = 0.0f
     private lateinit var audioManager: AudioManager
+    private var deviceVolume = 0
+
     private var vol = 1
     private var lockMode = false
-    lateinit var mGestureDetector: GestureDetector
+    private lateinit var mGestureDetector: GestureDetector
+   private lateinit var brightLevel:TextView
+   private lateinit var infoLayout:RelativeLayout
+    private lateinit var levelIcon:ImageView
 
+    private lateinit var rewLayout:LinearLayout
+    private lateinit var forLayout:LinearLayout
+
+   private lateinit var centerText:TextView
 
     @SuppressLint("InflateParams")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
+
+
+
+
+
 
         upData = getSharedPreferences(getString(R.string.Mehedi), MODE_PRIVATE)
         audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
@@ -154,30 +172,18 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
                 .setLoadControl(loadControl).build()
 
 
-        playerview = findViewById(R.id.exoPlayerView)
-        playerview.player = player
-        videoTitle = playerview.findViewById(R.id.videoName)
-        btnScale = playerview.findViewById(R.id.btn_fullscreen)
-        rotate = playerview.findViewById(R.id.rotate)
-        trackSelect = findViewById(R.id.audio_track)
-        back = playerview.findViewById(R.id.back)
-        lock = playerview.findViewById(R.id.lock)
-        soundsBar = playerview.findViewById(R.id.progressBar2)
+      initializer()
 
-        controls = playerview.findViewById(R.id.root)
-        brightnessBar = playerview.findViewById(R.id.progressBar1)
-        totalLayout = playerview.findViewById(R.id.totalLayout)
+
+       deviceVolume = player.deviceVolume
 
         mGestureDetector = GestureDetector(this, this)
-
-
 
         lock.setOnClickListener(this)
         totalLayout.setOnTouchListener(this)
 
         trackSelect.setOnClickListener(this)
         back.setOnClickListener(this)
-
 
         val displayMetrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(displayMetrics)
@@ -195,58 +201,76 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
 
         var clickCount = 0
         btnScale.setOnClickListener {
-            val view: View = LayoutInflater.from(this).inflate(R.layout.custom_toast, null)
-            val text = view.findViewById<TextView>(R.id.custom_toast_text)
             when (clickCount) {
                 0 -> {
                     playerview.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
-                    val toast = Toast.makeText(this, "Center crop", Toast.LENGTH_SHORT)
-                    toast.setGravity(Gravity.CENTER, 0, 0)
-                    toast.view = view
-                    text.text = getString(R.string.zoom)
-                    toast.show()
+                    centerText.visibility = View.VISIBLE
+                    centerText.text=getString(R.string.zoom)
+                    object : CountDownTimer(500, 1000) {
+                        override fun onTick(millisUntilFinished: Long) {//running functionality for now its no use
+                         }
+                        override fun onFinish() {
+                            centerText.visibility = View.GONE
+                        }
+                    }.start()
                     btnScale.setImageResource(R.drawable.ic_baseline_zoom_out_map_24)
 
 
                 }
                 1 -> {
                     playerview.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FILL
-                    val toast = Toast.makeText(this, "Center crop", Toast.LENGTH_SHORT)
-                    toast.setGravity(Gravity.CENTER, 0, 0)
-                    toast.view = view
-                    text.text = getString(R.string.fillToScreen)
-                    toast.show()
+                    centerText.visibility = View.VISIBLE
+                    centerText.text=getString(R.string.fillToScreen)
+                    object : CountDownTimer(500, 1000) {
+                        override fun onTick(millisUntilFinished: Long) {//running functionality for now its no use
+                        }
+                        override fun onFinish() {
+                            centerText.visibility = View.GONE
+                        }
+                    }.start()
                     btnScale.setImageResource(R.drawable.ic_baseline_fullscreen_24)
                 }
                 2 -> {
                     playerview.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT
                     playerview.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH
-                    val toast = Toast.makeText(this, "Center crop", Toast.LENGTH_SHORT)
-                    toast.setGravity(Gravity.CENTER, 0, 0)
-                    toast.view = view
-                    text.text = getString(R.string.stretched)
-                    toast.show()
+                    centerText.visibility = View.VISIBLE
+                    centerText.text=getString(R.string.stretched)
+                    object : CountDownTimer(500, 1000) {
+                        override fun onTick(millisUntilFinished: Long) {//running functionality for now its no use
+                        }
+                        override fun onFinish() {
+                            centerText.visibility = View.GONE
+                        }
+                    }.start()
                     btnScale.setImageResource(R.drawable.ic_baseline_open_with_24)
 
                 }
                 3 -> {
                     playerview.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT
-                    val toast = Toast.makeText(this, "Center crop", Toast.LENGTH_SHORT)
-                    toast.setGravity(Gravity.CENTER, 0, 0)
-                    toast.view = view
-                    text.text = getString(R.string.hundred)
-                    toast.show()
+                    centerText.visibility = View.VISIBLE
+                    centerText.text=getString(R.string.hundred)
+                    object : CountDownTimer(500, 1000) {
+                        override fun onTick(millisUntilFinished: Long) {//running functionality for now its no use
+                        }
+                        override fun onFinish() {
+                            centerText.visibility = View.GONE
+                        }
+                    }.start()
                     btnScale.setImageResource(R.drawable.ic_baseline_height_24)
 
                 }
                 4 -> {
                     playerview.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT
                     playerview.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH
-                    val toast = Toast.makeText(this, "Center crop", Toast.LENGTH_SHORT)
-                    toast.setGravity(Gravity.CENTER, 0, 0)
-                    toast.view = view
-                    text.text = getString(R.string.width)
-                    toast.show()
+                    centerText.visibility = View.VISIBLE
+                    centerText.text=getString(R.string.width)
+                    object : CountDownTimer(500, 1000) {
+                        override fun onTick(millisUntilFinished: Long) {//running functionality for now its no use
+                        }
+                        override fun onFinish() {
+                            centerText.visibility = View.GONE
+                        }
+                    }.start()
                     btnScale.setImageResource(R.drawable.ic_baseline_switch_video_24)
                 }
                 else -> {
@@ -289,6 +313,34 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
         player.volume
         player.play()
 
+
+    }
+
+    private fun initializer() {                              //I N I T I A L I Z A R   C H E C K P O I N T
+        playerview = findViewById(R.id.exoPlayerView)
+        playerview.player = player
+        videoTitle = playerview.findViewById(R.id.videoName)
+
+        btnScale = playerview.findViewById(R.id.btn_fullscreen)
+        rotate = playerview.findViewById(R.id.rotate)
+        trackSelect = findViewById(R.id.audio_track)
+
+        back = playerview.findViewById(R.id.back)
+        lock = playerview.findViewById(R.id.lock)
+        soundsBar = playerview.findViewById(R.id.progressBar2)
+        brightnessBar = playerview.findViewById(R.id.progressBar1)
+
+        controls = playerview.findViewById(R.id.root)
+        totalLayout = playerview.findViewById(R.id.totalLayout)
+
+        brightLevel = playerview.findViewById(R.id.txtInfo)
+        infoLayout = playerview.findViewById(R.id.info)
+        levelIcon = playerview.findViewById(R.id.brightnessIcon)
+
+        rewLayout = playerview.findViewById(R.id.rewLayout)
+        forLayout = playerview.findViewById(R.id.forLayout)
+
+        centerText = playerview.findViewById(R.id.centerText)
 
     }
 
@@ -414,14 +466,24 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
                         window.attributes = layout
                         oldBrightness = layout.screenBrightness
                         brightnessBar.progress = pBright.toInt()
+
+
+                        //for text
+                        infoLayout.visibility = View.VISIBLE
+                        val textValueB = brightness * 10
+                        brightLevel.text = textValueB.toInt().toString()
+                        levelIcon.setImageResource(R.drawable.ic_baseline_brightness_medium_24)
+
+
                     }
                 } else if (leftClicked) {
+
                     prevVolume = upData.getInt("volume", 1)
 
                     if (diffY != 0.0f && diffX < 20) {
 
                         soundsBar.visibility = View.VISIBLE
-                        vol = prevVolume!! + (diffY / 30).toInt()
+                        vol = deviceVolume + (diffY / 30).toInt()
 
                         if (vol > 30) {
 
@@ -432,25 +494,38 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
                             vol = 0
 
                         }
-                            player.deviceVolume = vol
-                            soundsBar.progress = (vol * 3.34).toInt()
+                        player.deviceVolume = vol
+                        soundsBar.progress = (vol * 3.34).toInt()
+                        //for text
+                        infoLayout.visibility = View.VISIBLE
+                        val textValueB = vol
+                        brightLevel.text = textValueB.toString()
+                        levelIcon.setImageResource(R.drawable.ic_baseline_volume_up_24)
+
+
+
                     }
                 }
 
-                 true
+                true
             }
-            MotionEvent.ACTION_UP -> {
+            MotionEvent.ACTION_UP -> {                                  // O N  F I N G E R  U P
 
-                    rightClicked = false
-                    leftClicked = false
+                rightClicked = false
+                leftClicked = false
 
-                    brightnessBar.visibility = View.GONE
-                    soundsBar.visibility = View.GONE
-                    brightnessBar.progress = brightness.toInt()
-                    soundsBar.progress = prevVolume!!
-
+                brightnessBar.visibility = View.GONE
+                soundsBar.visibility = View.GONE
+                brightnessBar.progress = brightness.toInt()
+                soundsBar.progress = prevVolume!!
+                
                 upData.edit().putString("brightness", brightness.toString()).apply()
                 upData.edit().putInt("volume", vol).apply()
+
+                infoLayout.visibility = View.GONE
+
+               // moveLayout.visibility = View.GONE
+
 
                 true
             }
@@ -510,14 +585,30 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
     override fun onDoubleTap(e: MotionEvent?): Boolean {
         val currentPosition = player.currentPosition
         if (e!!.x < (sWidth / 2)) {
+           rewLayout.visibility = View.VISIBLE
+            object : CountDownTimer(500, 1000) {
+                override fun onTick(millisUntilFinished: Long) {//running functionality for now its no use
+                }
+                override fun onFinish() {
+                    rewLayout.visibility = View.GONE
+                }
+            }.start()
 
 
-            player.seekTo(currentPosition - 10000)
+            player.seekTo(currentPosition - 30000)
 
             // We pressed on the right
         } else if (e.x > (sWidth / 2)) {
+            forLayout.visibility = View.VISIBLE
+            object : CountDownTimer(500, 1000) {
+                override fun onTick(millisUntilFinished: Long) {//running functionality for now its no use
+                }
+                override fun onFinish() {
+                    forLayout.visibility = View.GONE
+                }
+            }.start()
 
-            player.seekTo(currentPosition + 10000)
+            player.seekTo(currentPosition + 30000)
 
         }
 
@@ -525,7 +616,19 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
     }
 
     override fun onDoubleTapEvent(e: MotionEvent?): Boolean {
+
         return false
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        val decorView: View = window.decorView
+
+        val uiOptions: Int = (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_FULLSCREEN)
+        decorView.systemUiVisibility = uiOptions
+
     }
 
 

@@ -37,4 +37,8 @@
     <string name="developer_a_t_mehedi_hassan">Developer:-A T Mehedi Hassan</string>
     <string name="ok">OK</string>
     <string name="unlock">unlock</string>
+    <string name="_30">+30</string>
+    <string name="brightnesslevel">brightnessLevel</string>
+    <string name="rewinding">rewinding</string>
+    <string name="__30">-30</string>
 </resources>
