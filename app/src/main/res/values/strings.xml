@@ -41,4 +41,6 @@
     <string name="brightnesslevel">brightnessLevel</string>
     <string name="rewinding">rewinding</string>
     <string name="__30">-30</string>
+    <string name="refresh">refresh</string>
+    <string name="logo">logo</string>
 </resources>

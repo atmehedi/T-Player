@@ -101,7 +101,7 @@ class TrackSelectionDialog : DialogFragment() {
     }
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+            inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val dialogView: View = inflater.inflate(R.layout.track_selection_dialog, container, false)
         val tabLayout: TabLayout = dialogView.findViewById(R.id.track_selection_dialog_tab_layout)
         val viewPager: ViewPager = dialogView.findViewById(R.id.track_selection_dialog_view_pager)
@@ -110,8 +110,8 @@ class TrackSelectionDialog : DialogFragment() {
         viewPager.adapter = FragmentAdapter(childFragmentManager)
         tabLayout.setupWithViewPager(viewPager)
         tabLayout.visibility = if (tabFragments.size() > 1) View.VISIBLE else View.GONE
-        cancelButton.setOnClickListener { view: View? -> dismiss() }
-        okButton.setOnClickListener { view: View? ->
+        cancelButton.setOnClickListener { dismiss() }
+        okButton.setOnClickListener {
             onClickListener!!.onClick(dialog, DialogInterface.BUTTON_POSITIVE)
             dismiss()
         }
@@ -127,7 +127,7 @@ class TrackSelectionDialog : DialogFragment() {
             return tabFragments.size()
         }
 
-        override fun getPageTitle(position: Int): CharSequence? {
+        override fun getPageTitle(position: Int): CharSequence {
             return getTrackTypeString(resources, tabTrackTypes[position])
         }
     }
@@ -251,40 +251,6 @@ class TrackSelectionDialog : DialogFragment() {
                         }
                         trackSelector.setParameters(builder)
                     },
-                    onDismissListener)
-            return trackSelectionDialog
-        }
-
-        /**
-         * Creates a dialog for given [MappedTrackInfo] and [DefaultTrackSelector.Parameters].
-         *
-         * @param titleId The resource id of the dialog title.
-         * @param mappedTrackInfo The [MappedTrackInfo] to display.
-         * @param initialParameters The [DefaultTrackSelector.Parameters] describing the initial
-         * track selection.
-         * @param allowAdaptiveSelections Whether adaptive selections (consisting of more than one track)
-         * can be made.
-         * @param allowMultipleOverrides Whether tracks from multiple track groups can be selected.
-         * @param onClickListener [DialogInterface.OnClickListener] called when tracks are selected.
-         * @param onDismissListener [DialogInterface.OnDismissListener] called when the dialog is
-         * dismissed.
-         */
-        fun createForMappedTrackInfoAndParameters(
-                titleId: Int,
-                mappedTrackInfo: MappedTrackInfo,
-                initialParameters: DefaultTrackSelector.Parameters,
-                allowAdaptiveSelections: Boolean,
-                allowMultipleOverrides: Boolean,
-                onClickListener: DialogInterface.OnClickListener,
-                onDismissListener: DialogInterface.OnDismissListener): TrackSelectionDialog {
-            val trackSelectionDialog = TrackSelectionDialog()
-            trackSelectionDialog.init(
-                    titleId,
-                    mappedTrackInfo,
-                    initialParameters,
-                    allowAdaptiveSelections,
-                    allowMultipleOverrides,
-                    onClickListener,
                     onDismissListener)
             return trackSelectionDialog
         }

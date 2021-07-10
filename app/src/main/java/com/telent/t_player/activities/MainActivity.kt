@@ -8,21 +8,23 @@ import android.content.SharedPreferences
 import android.database.Cursor
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.media.MediaCodecList
+import android.media.MediaFormat.*
 import android.os.Bundle
 import android.os.Handler
 import android.provider.MediaStore
 import android.view.*
 import android.widget.FrameLayout
-import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.exoplayer2.C
+import com.google.android.exoplayer2.audio.Ac3Util
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.telent.t_player.R
 import com.telent.t_player.adapter.RecyclerAdapter
@@ -45,14 +47,33 @@ class MainActivity : AppCompatActivity() {
     lateinit var yes:TextView
     lateinit var no:TextView
 
+    lateinit var swipeDown:SwipeRefreshLayout
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+
+
+
         sharedPreferences = getSharedPreferences(
-                getString(R.string.shared_value_file),Context.MODE_PRIVATE)
+                getString(R.string.shared_value_file), Context.MODE_PRIVATE)
+
+        if (intent!=null){
+           val exit =  intent.getStringExtra("exit")
+        if (exit =="exit"){
+            finish()
+        }
+        }
 
 
+        swipeDown = findViewById(R.id.swipeDown)
 
+        swipeDown.setOnRefreshListener {
+            startActivity(intent)
+            finish()
+        swipeDown.isRefreshing  = false
+        }
         displayVideoList()
 
     }
@@ -62,10 +83,13 @@ class MainActivity : AppCompatActivity() {
         coordinator = findViewById(R.id.coordinatorLayout)
         frameLayout = findViewById(R.id.frameLayout)
         fab = findViewById(R.id.fab)
+
+
+
         toolbar = findViewById(R.id.toolBar)
-        arraylistTitle = ArrayList<String>()
-        arraylistId = HashMap<String, String> ()
-        arraylistfid = HashMap<String, String> ()
+        arraylistTitle = ArrayList()
+        arraylistId = HashMap()
+        arraylistfid = HashMap()
 
         displayVideos()
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -89,7 +113,7 @@ for( i in folderName){
     videoFl.add(vidObject)
 }
     }
-    private fun displayVideos(){
+    private fun displayVideos(): Cursor {
         val check = sharedPreferences.getString("Uri", null)
         if (check == null){
             fab.visibility = View.GONE
@@ -144,13 +168,17 @@ for( i in folderName){
                 } while (cursor.moveToNext())
             }
         }
-        cursor?.close()
+//        cursor.setNotificationUri(getContext().getContentResolver(), uri);
+//        return cursor;
+
+        cursor!!.setNotificationUri(this.contentResolver, uri)
+        cursor.close()
+        return cursor
 
     }
     private fun setUpToolbar(){
         setSupportActionBar(toolbar)
         supportActionBar?.title = getString(R.string.folderTop)
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -202,6 +230,10 @@ for( i in folderName){
 
 
             }
+            R.id.refresh->{
+                startActivity(intent)
+                finish()
+            }
         }
 
         return super.onOptionsItemSelected(item)
@@ -216,7 +248,7 @@ for( i in folderName){
         doubleBackToExitPressedOnce = true
         Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show()
 
-        Handler().postDelayed(Runnable { doubleBackToExitPressedOnce = false }, 2000)
+        Handler().postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
     }
 
 

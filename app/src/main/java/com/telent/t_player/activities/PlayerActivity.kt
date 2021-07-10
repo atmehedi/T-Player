@@ -1,6 +1,5 @@
 package com.telent.t_player.activities
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
@@ -11,11 +10,14 @@ import android.os.Bundle
 import android.os.CountDownTimer
 import android.provider.OpenableColumns
 import android.util.DisplayMetrics
-import android.util.Log
-import android.view.*
+import android.view.GestureDetector
+import android.view.MotionEvent
+import android.view.View
+import android.view.WindowManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector.ParametersBuilder
@@ -35,7 +37,6 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
     private var vidWidth: String? = "null"
     private var position: String? = "null"
     private var prevBrightness: String? = "0.01f"
-    private var prevVolume: Int? = 0
 
     private lateinit var playerview: PlayerView
     private lateinit var player: SimpleExoPlayer
@@ -56,7 +57,6 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
     private lateinit var controls: RelativeLayout
     private lateinit var brightnessBar: ProgressBar
     private lateinit var soundsBar: ProgressBar
-    private var DEBUG_TAG = "Gestures"
     private lateinit var totalLayout: RelativeLayout
 
     private var basex = 0f
@@ -86,68 +86,60 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
 
    private lateinit var centerText:TextView
 
-    @SuppressLint("InflateParams")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_player)
+        this.setContentView(R.layout.activity_player)
 
 
 
 
+        this.upData = this.getSharedPreferences(this.getString(R.string.Mehedi), MODE_PRIVATE)
+        this.audioManager = this.getSystemService(AUDIO_SERVICE) as AudioManager
 
-
-        upData = getSharedPreferences(getString(R.string.Mehedi), MODE_PRIVATE)
-        audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
-
-        val display = windowManager.defaultDisplay
+        val display = this.windowManager.defaultDisplay
         val size = Point()
         display.getSize(size)
-        sWidth = size.x
-        sHeight = size.y
+        this.sWidth = size.x
+        this.sHeight = size.y
 
-        window.decorView.setOnSystemUiVisibilityChangeListener { visibility ->
+        this.window.decorView.setOnSystemUiVisibilityChangeListener { visibility ->
             if (visibility and View.SYSTEM_UI_FLAG_FULLSCREEN == 0) {
-                window.decorView.apply {
-                    systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                this.window.decorView.apply {
+                    this.systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
 
                     //Hide navigation while not touching
                 }
             }
         }
 
-        val data: Uri? = intent?.data
-        if (intent?.type?.startsWith("video/") == true) {
+        val data: Uri? = this.intent?.data
+        if (this.intent?.type?.startsWith("video/") == true) {
             println("video found")
-
 
         }
 
-        val returnCursor = data?.let { contentResolver.query(it, null, null, null, null) }
+        val returnCursor = data?.let { this.contentResolver.query(it, null, null, null, null) }
         val nameIndex = returnCursor?.getColumnIndex(OpenableColumns.DISPLAY_NAME)
         returnCursor?.moveToFirst()
         val fileName = nameIndex?.let { returnCursor.getString(it) }
         returnCursor?.close()
 
-
-
-
-
-        sharedPreferences = getSharedPreferences(getString(R.string.shared_value_file), Context.MODE_PRIVATE)
-        focusCheck = getSharedPreferences(getString(R.string.shared_value_focus), Context.MODE_PRIVATE)
+        this.sharedPreferences = this.getSharedPreferences(this.getString(R.string.shared_value_file), Context.MODE_PRIVATE)
+        this.focusCheck = this.getSharedPreferences(this.getString(R.string.shared_value_focus), Context.MODE_PRIVATE)
 
         //fullscreen codes
-        window.setFlags(
+        this.window.setFlags(
                 WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager
                 .LayoutParams.FLAG_FULLSCREEN
         )
-        if (intent != null) {
-            vidUri = intent.getStringExtra("videoUri")
-            vidName = intent.getStringExtra("videoName")
-            vidWidth = intent.getStringExtra("videoWidth")
-            position = intent.getStringExtra("position")
+        if (this.intent != null) {
+            this.vidUri = this.intent.getStringExtra("videoUri")
+            this.vidName = this.intent.getStringExtra("videoName")
+            this.vidWidth = this.intent.getStringExtra("videoWidth")
+            this.position = this.intent.getStringExtra("position")
 
 
-            if (vidUri == null) {
+            if (this.vidUri == null) {
                 println("Uri given is null")
             }
         } else {
@@ -158,120 +150,131 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
         //track selection
         if (savedInstanceState == null) {
             val builder = ParametersBuilder( /* context= */this)
-            trackSelectorParameters = builder.build()
+            this.trackSelectorParameters = builder.build()
 
         }
-        trackSelector = DefaultTrackSelector(this) //Audio track selector
+        this.trackSelector = DefaultTrackSelector(this) //Audio track selector
 
         val loadControl = DefaultLoadControl()
         val renderersFactory = DefaultRenderersFactory(this)
+                .setEnableDecoderFallback(true).setExtensionRendererMode(EXTENSION_RENDERER_MODE_PREFER) //Sw decoder
 
 
-        player = SimpleExoPlayer.Builder(this, renderersFactory)
-                .setTrackSelector(trackSelector)
+
+       // val renderersFactory = DefaultRenderersFactory(this)
+
+
+        this.player = SimpleExoPlayer.Builder(this, renderersFactory)
+                .setTrackSelector(this.trackSelector)
                 .setLoadControl(loadControl).build()
 
 
-      initializer()
+        this.initializer()
 
 
-       deviceVolume = player.deviceVolume
+            this.deviceVolume = this.player.deviceVolume
 
-        mGestureDetector = GestureDetector(this, this)
 
-        lock.setOnClickListener(this)
-        totalLayout.setOnTouchListener(this)
 
-        trackSelect.setOnClickListener(this)
-        back.setOnClickListener(this)
+
+        this.mGestureDetector = GestureDetector(this, this)
+
+        this.lock.setOnClickListener(this)
+        this.totalLayout.setOnTouchListener(this)
+
+        this.trackSelect.setOnClickListener(this)
+        this.back.setOnClickListener(this)
 
         val displayMetrics = DisplayMetrics()
-        windowManager.defaultDisplay.getMetrics(displayMetrics)
+        this.windowManager.defaultDisplay.getMetrics(displayMetrics)
         val width = displayMetrics.widthPixels
-        val vv = vidWidth?.toInt()//VIDEO WIDTH SIZE
+        val vv = this.vidWidth?.toInt()//VIDEO WIDTH SIZE
 
         if (vv != null) {
-            requestedOrientation = if (vv > width) {
+            this.requestedOrientation = if (vv > width) {
                 ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
             } else {
                 ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
             }
         }
-
-
         var clickCount = 0
-        btnScale.setOnClickListener {
+        this.btnScale.setOnClickListener {
             when (clickCount) {
                 0 -> {
-                    playerview.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
-                    centerText.visibility = View.VISIBLE
-                    centerText.text=getString(R.string.zoom)
+                    this.playerview.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
+                    this.centerText.visibility = View.VISIBLE
+                    this.centerText.text = this.getString(R.string.zoom)
                     object : CountDownTimer(500, 1000) {
                         override fun onTick(millisUntilFinished: Long) {//running functionality for now its no use
-                         }
+                        }
+
                         override fun onFinish() {
-                            centerText.visibility = View.GONE
+                            this@PlayerActivity.centerText.visibility = View.GONE
                         }
                     }.start()
-                    btnScale.setImageResource(R.drawable.ic_baseline_zoom_out_map_24)
+                    this.btnScale.setImageResource(R.drawable.ic_baseline_zoom_out_map_24)
 
 
                 }
                 1 -> {
-                    playerview.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FILL
-                    centerText.visibility = View.VISIBLE
-                    centerText.text=getString(R.string.fillToScreen)
+                    this.playerview.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FILL
+                    this.centerText.visibility = View.VISIBLE
+                    this.centerText.text = this.getString(R.string.fillToScreen)
                     object : CountDownTimer(500, 1000) {
                         override fun onTick(millisUntilFinished: Long) {//running functionality for now its no use
                         }
+
                         override fun onFinish() {
-                            centerText.visibility = View.GONE
+                            this@PlayerActivity.centerText.visibility = View.GONE
                         }
                     }.start()
-                    btnScale.setImageResource(R.drawable.ic_baseline_fullscreen_24)
+                    this.btnScale.setImageResource(R.drawable.ic_baseline_fullscreen_24)
                 }
                 2 -> {
-                    playerview.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT
-                    playerview.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH
-                    centerText.visibility = View.VISIBLE
-                    centerText.text=getString(R.string.stretched)
+                    this.playerview.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT
+                    this.playerview.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH
+                    this.centerText.visibility = View.VISIBLE
+                    this.centerText.text = this.getString(R.string.stretched)
                     object : CountDownTimer(500, 1000) {
                         override fun onTick(millisUntilFinished: Long) {//running functionality for now its no use
                         }
+
                         override fun onFinish() {
-                            centerText.visibility = View.GONE
+                            this@PlayerActivity.centerText.visibility = View.GONE
                         }
                     }.start()
-                    btnScale.setImageResource(R.drawable.ic_baseline_open_with_24)
+                    this.btnScale.setImageResource(R.drawable.ic_baseline_open_with_24)
 
                 }
                 3 -> {
-                    playerview.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT
-                    centerText.visibility = View.VISIBLE
-                    centerText.text=getString(R.string.hundred)
+                    this.playerview.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT
+                    this.centerText.visibility = View.VISIBLE
+                    this.centerText.text = this.getString(R.string.hundred)
                     object : CountDownTimer(500, 1000) {
                         override fun onTick(millisUntilFinished: Long) {//running functionality for now its no use
                         }
+
                         override fun onFinish() {
-                            centerText.visibility = View.GONE
+                            this@PlayerActivity.centerText.visibility = View.GONE
                         }
                     }.start()
-                    btnScale.setImageResource(R.drawable.ic_baseline_height_24)
+                    this.btnScale.setImageResource(R.drawable.ic_baseline_height_24)
 
                 }
                 4 -> {
-                    playerview.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT
-                    playerview.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH
-                    centerText.visibility = View.VISIBLE
-                    centerText.text=getString(R.string.width)
+                    this.playerview.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT
+                    this.playerview.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH
+                    this.centerText.visibility = View.VISIBLE
+                    this.centerText.text = this.getString(R.string.width)
                     object : CountDownTimer(500, 1000) {
                         override fun onTick(millisUntilFinished: Long) {//running functionality for now its no use
                         }
+
                         override fun onFinish() {
-                            centerText.visibility = View.GONE
+                            this@PlayerActivity.centerText.visibility = View.GONE
                         }
                     }.start()
-                    btnScale.setImageResource(R.drawable.ic_baseline_switch_video_24)
+                    this.btnScale.setImageResource(R.drawable.ic_baseline_switch_video_24)
                 }
                 else -> {
                     clickCount = -1
@@ -279,68 +282,70 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
             }
             clickCount++
         }
-        rotate.setOnClickListener {
+        this.rotate.setOnClickListener {
 
-            if (flag) {
-                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-                flag = false
+            if (this.flag) {
+                this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                this.flag = false
             } else {
-                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
-                flag = true
+                this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+                this.flag = true
 
             }
         }
         if (data != null) {
-            vidUri = data.toString()
+            this.vidUri = data.toString()
         }
-        player.setMediaItem(MediaItem.fromUri(vidUri.toString()))
+        this.player.setMediaItem(MediaItem.fromUri(this.vidUri.toString()))
 
-        if (position != null) {
-            player.seekTo(position!!.toLong())
+        if (this.position != null) {
+            this.player.seekTo(this.position!!.toLong())
         }
-        val focusMode = focusCheck.getString("checked", "Unchecked")
+        val focusMode = this.focusCheck.getString("checked", "Unchecked")
         if (focusMode == "checked") {
-            playUndisterbed()
+            this.playUndisterbed()
         }
 
         if (fileName !== null) {
-            vidName = fileName
+            this.vidName = fileName
         }
 
-        videoTitle.text = vidName
-        player.prepare()
-        player.playWhenReady
-        player.volume
-        player.play()
 
+
+        this.videoTitle.text = this.vidName
+        this.player.prepare()
+        this.player.playWhenReady
+        this.player.volume
+        this.player.play()
+        println(player.audioFormat)
 
     }
 
     private fun initializer() {                              //I N I T I A L I Z A R   C H E C K P O I N T
-        playerview = findViewById(R.id.exoPlayerView)
-        playerview.player = player
-        videoTitle = playerview.findViewById(R.id.videoName)
+        this.playerview = this.findViewById(R.id.exoPlayerView)
+        this.playerview.player = this.player
+        this.videoTitle = this.playerview.findViewById(R.id.videoName)
 
-        btnScale = playerview.findViewById(R.id.btn_fullscreen)
-        rotate = playerview.findViewById(R.id.rotate)
-        trackSelect = findViewById(R.id.audio_track)
+        this.btnScale = this.playerview.findViewById(R.id.btn_fullscreen)
+        this.rotate = this.playerview.findViewById(R.id.rotate)
+        this.trackSelect = this.findViewById(R.id.audio_track)
 
-        back = playerview.findViewById(R.id.back)
-        lock = playerview.findViewById(R.id.lock)
-        soundsBar = playerview.findViewById(R.id.progressBar2)
-        brightnessBar = playerview.findViewById(R.id.progressBar1)
+        this.back = this.playerview.findViewById(R.id.back)
+        this.lock = this.playerview.findViewById(R.id.lock)
+        this.soundsBar = this.playerview.findViewById(R.id.progressBar2)
+        this.brightnessBar = this.playerview.findViewById(R.id.progressBar1)
 
-        controls = playerview.findViewById(R.id.root)
-        totalLayout = playerview.findViewById(R.id.totalLayout)
+        this.controls = this.playerview.findViewById(R.id.root)
+        this.totalLayout = this.playerview.findViewById(R.id.totalLayout)
 
-        brightLevel = playerview.findViewById(R.id.txtInfo)
-        infoLayout = playerview.findViewById(R.id.info)
-        levelIcon = playerview.findViewById(R.id.brightnessIcon)
+        this.brightLevel = this.playerview.findViewById(R.id.txtInfo)
+        this.infoLayout = this.playerview.findViewById(R.id.info)
+        this.levelIcon = this.playerview.findViewById(R.id.brightnessIcon)
 
-        rewLayout = playerview.findViewById(R.id.rewLayout)
-        forLayout = playerview.findViewById(R.id.forLayout)
+        this.rewLayout = this.playerview.findViewById(R.id.rewLayout)
+        this.forLayout = this.playerview.findViewById(R.id.forLayout)
 
-        centerText = playerview.findViewById(R.id.centerText)
+        this.centerText = this.playerview.findViewById(R.id.centerText)
 
     }
 
@@ -350,159 +355,149 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
                 .setUsage(C.USAGE_MEDIA)
                 .setContentType(C.CONTENT_TYPE_MOVIE)
                 .build()
-        player.setAudioAttributes(audioAttributes, true)
+        this.player.setAudioAttributes(audioAttributes, true)
     }
 
-    override fun onPause() {
+    override fun onPause() {                             //O V E R R I D E F U N C T I O N    C H E C K P O I N T
         super.onPause()
-        player.pause()
+        this.player.pause()
 
 
     }
 
     override fun onDestroy() {
-        player.playWhenReady = false
-        player.playbackState
-        player.release()
+        this.upData.edit().clear().apply()
+        this.player.playWhenReady = false
+        this.player.playbackState
+        this.player.release()
         super.onDestroy()
 
     }
 
     override fun onRestart() {
         super.onRestart()
-        player.playWhenReady = true
-        player.playbackState
+        this.player.playWhenReady = true
+        this.player.playbackState
 
     }
 
     override fun onResume() {
-        player.playWhenReady = true
+        this.player.playWhenReady = true
         //player.play()
         super.onResume()
 
     }
 
-    override fun onClick(v: View?) {
-        if (v === trackSelect && !isShowingTrackSelectionDialog
-                && TrackSelectionDialog.willHaveContent(trackSelector)) {
-            isShowingTrackSelectionDialog = true
+    override fun onClick(v: View?) {                             //O N C L I C K   F U N C T I O N   C H E C K P O I N T
+        if (v === this.trackSelect && !this.isShowingTrackSelectionDialog
+                && TrackSelectionDialog.willHaveContent(this.trackSelector)) {
+            this.isShowingTrackSelectionDialog = true
             val trackSelectionDialog = TrackSelectionDialog.createForTrackSelector(
-                    trackSelector  /* onDismissListener= */
-            ) { isShowingTrackSelectionDialog = false }
-            trackSelectionDialog.show(supportFragmentManager,  /* tag= */null)
+                    this.trackSelector  /* onDismissListener= */
+            ) { this.isShowingTrackSelectionDialog = false }
+            trackSelectionDialog.show(this.supportFragmentManager,  /* tag= */null)
         }
-        if (v == back) {
-            pref()
-            finish()
+        if (v == this.back) {
+            this.pref()
+            this.finish()
         }
-        if (v == lock) {
-            if (controls.visibility == View.VISIBLE) {
-                lockMode = true
-                lock.setImageResource(R.drawable.ic_baseline_lock_24)
-                lock.visibility = View.VISIBLE
-                controls.visibility = View.GONE
-            } else if (controls.visibility == View.GONE) {
-                lockMode = false
-                lock.setImageResource(R.drawable.ic_baseline_lock_open_24)
-                controls.visibility = View.VISIBLE
+        if (v == this.lock) {
+            if (this.controls.visibility == View.VISIBLE) {
+                this.lockMode = true
+                this.lock.setImageResource(R.drawable.ic_baseline_lock_24)
+                this.lock.visibility = View.VISIBLE
+                this.controls.visibility = View.GONE
+            } else if (this.controls.visibility == View.GONE) {
+                this.lockMode = false
+                this.lock.setImageResource(R.drawable.ic_baseline_lock_open_24)
+                this.controls.visibility = View.VISIBLE
             }
-
-
         }
-
-
     }
 
     override fun onBackPressed() {
-        pref()
+        this.pref()
         super.onBackPressed()
     }
 
     private fun pref() {
-
-        sharedPreferences.edit().putString("Uri", vidUri).apply()
-        sharedPreferences.edit().putString("videoName", vidName).apply()
-        sharedPreferences.edit().putString("width", vidWidth).apply()
-        sharedPreferences.edit().putString("position", player.currentPosition.toString()).apply()
+        this.sharedPreferences.edit().putString("Uri", this.vidUri).apply()
+        this.sharedPreferences.edit().putString("videoName", this.vidName).apply()
+        this.sharedPreferences.edit().putString("width", this.vidWidth).apply()
+        this.sharedPreferences.edit().putString("position", this.player.currentPosition.toString()).apply()
     }
-
-    override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-
-        mGestureDetector.onTouchEvent(event)
+    override fun onTouch(v: View?, event: MotionEvent?): Boolean {                   //O N T O U C H   C H E C K P O I N T
+        this.mGestureDetector.onTouchEvent(event)
         return when (event!!.action) {
             MotionEvent.ACTION_DOWN -> {
                 // We pressed on the left
-                if (event.x < (sWidth / 2)) {
-                    leftClicked = true
-
+                if (event.x < (this.sWidth / 2)) {
+                    this.leftClicked = true
                     // We pressed on the right
-                } else if (event.x > (sWidth / 2)) {
+                } else if (event.x > (this.sWidth / 2)) {
 
-                    rightClicked = true
+                    this.rightClicked = true
                 }
-                basex = event.x
-                basey = event.y
+                this.basex = event.x
+                this.basey = event.y
                 true
             }
             MotionEvent.ACTION_MOVE -> {
 
-                diffX = ceil((event.x - basex).toDouble()).toFloat()
-                diffY = ceil((basey - event.y).toDouble()).toFloat()
+                this.diffX = ceil((event.x - this.basex).toDouble()).toFloat()
+                this.diffY = ceil((this.basey - event.y).toDouble()).toFloat()
 
-                if (rightClicked) {
-                    prevBrightness = upData.getString("brightness", "0.01f")
-                    if (diffY != 0.0f && diffX < 20) {
-                        brightness = prevBrightness!!.toFloat() + diffY / 500
-                        pBright = brightness * 100
-                        if (brightness > 1) {
-                            brightness = 1.0f
-                        } else if (brightness < 0.01f) {
-                            brightness = 0.01f
+                if (this.rightClicked) {
+                    this.prevBrightness = this.upData.getString("brightness", "0.01f")
+                    if (this.diffY != 0.0f && this.diffX < 20) {
+                        this.brightness = this.prevBrightness!!.toFloat() + this.diffY / 500
+                        this.pBright = this.brightness * 100
+                        if (this.brightness > 1) {
+                            this.brightness = 1.0f
+                        } else if (this.brightness < 0.01f) {
+                            this.brightness = 0.01f
                         }
-                        brightnessBar.visibility = View.VISIBLE
-                        val layout = window.attributes
+                        this.brightnessBar.visibility = View.VISIBLE
+                        val layout = this.window.attributes
                         layout.screenBrightness
-                        layout.screenBrightness = brightness
-                        window.attributes = layout
-                        oldBrightness = layout.screenBrightness
-                        brightnessBar.progress = pBright.toInt()
-
+                        layout.screenBrightness = this.brightness
+                        this.window.attributes = layout
+                        this.oldBrightness = layout.screenBrightness
+                        this.brightnessBar.progress = this.pBright.toInt()
 
                         //for text
-                        infoLayout.visibility = View.VISIBLE
-                        val textValueB = brightness * 10
-                        brightLevel.text = textValueB.toInt().toString()
-                        levelIcon.setImageResource(R.drawable.ic_baseline_brightness_medium_24)
+                        this.infoLayout.visibility = View.VISIBLE
+                        val textValueB = this.brightness * 10
+                        this.brightLevel.text = textValueB.toInt().toString()
+                        this.levelIcon.setImageResource(R.drawable.ic_baseline_brightness_medium_24)
 
 
                     }
-                } else if (leftClicked) {
+                } else if (this.leftClicked) {
 
-                    prevVolume = upData.getInt("volume", 1)
 
-                    if (diffY != 0.0f && diffX < 20) {
+                    if (this.diffY != 0.0f && this.diffX < 20) {
+                        val prevVolume = this.upData.getInt("volume", this.deviceVolume)
+                        this.soundsBar.visibility = View.VISIBLE
 
-                        soundsBar.visibility = View.VISIBLE
-                        vol = deviceVolume + (diffY / 30).toInt()
+                        this.vol = this.deviceVolume + (this.diffY / 30).toInt()
+                        println("dv = ${this.deviceVolume} , v= ${this.vol} ,prev = $prevVolume and ${this.diffY}")
+                        if (this.vol > 30) {
 
-                        if (vol > 30) {
+                            this.vol = 30
 
-                            vol = 30
+                        } else if (this.vol < 0) {
 
-                        } else if (vol < 0) {
-
-                            vol = 0
+                            this.vol = 0
 
                         }
-                        player.deviceVolume = vol
-                        soundsBar.progress = (vol * 3.34).toInt()
+                        this.player.deviceVolume = this.vol
+                        this.soundsBar.progress = (this.vol * 3.34).toInt()
                         //for text
-                        infoLayout.visibility = View.VISIBLE
-                        val textValueB = vol
-                        brightLevel.text = textValueB.toString()
-                        levelIcon.setImageResource(R.drawable.ic_baseline_volume_up_24)
-
-
+                        this.infoLayout.visibility = View.VISIBLE
+                        val textValueB = this.vol
+                        this.brightLevel.text = textValueB.toString()
+                        this.levelIcon.setImageResource(R.drawable.ic_baseline_volume_up_24)
 
                     }
                 }
@@ -510,31 +505,28 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
                 true
             }
             MotionEvent.ACTION_UP -> {                                  // O N  F I N G E R  U P
+                this.rightClicked = false
+                this.leftClicked = false
+                this.deviceVolume = this.player.deviceVolume
 
-                rightClicked = false
-                leftClicked = false
+                this.brightnessBar.visibility = View.GONE
+                this.soundsBar.visibility = View.GONE
+                this.brightnessBar.progress = this.brightness.toInt()
+                this.soundsBar.progress = this.deviceVolume
 
-                brightnessBar.visibility = View.GONE
-                soundsBar.visibility = View.GONE
-                brightnessBar.progress = brightness.toInt()
-                soundsBar.progress = prevVolume!!
-                
-                upData.edit().putString("brightness", brightness.toString()).apply()
-                upData.edit().putInt("volume", vol).apply()
+                this.upData.edit().putString("brightness", this.brightness.toString()).apply()
+                this.upData.edit().putInt("volume", this.vol).apply()
 
-                infoLayout.visibility = View.GONE
-
-               // moveLayout.visibility = View.GONE
-
+                this.infoLayout.visibility = View.GONE
 
                 true
             }
             MotionEvent.ACTION_CANCEL -> {
-                Log.d(DEBUG_TAG, "Action was CANCEL")
+                //code for action cancel
                 true
             }
             MotionEvent.ACTION_OUTSIDE -> {
-                Log.d(DEBUG_TAG, "Movement occurred outside bounds of current screen element")
+                //code for action outside
                 true
             }
             else -> super.onTouchEvent(event)
@@ -554,13 +546,13 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
 
     override fun onSingleTapUp(e: MotionEvent?): Boolean {
 
-        if (controls.visibility == View.VISIBLE && !lockMode) {
-            controls.visibility = View.GONE
-            lock.visibility = View.GONE
+        if (this.controls.visibility == View.VISIBLE && !this.lockMode) {
+            this.controls.visibility = View.GONE
+            this.lock.visibility = View.GONE
 
-        } else if (controls.visibility == View.GONE && !lockMode) {
-            controls.visibility = View.VISIBLE
-            lock.visibility = View.VISIBLE
+        } else if (this.controls.visibility == View.GONE && !this.lockMode) {
+            this.controls.visibility = View.VISIBLE
+            this.lock.visibility = View.VISIBLE
         }
 
         return true
@@ -583,32 +575,32 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
     }
 
     override fun onDoubleTap(e: MotionEvent?): Boolean {
-        val currentPosition = player.currentPosition
-        if (e!!.x < (sWidth / 2)) {
-           rewLayout.visibility = View.VISIBLE
+        val currentPosition = this.player.currentPosition
+        if (e!!.x < (this.sWidth / 2)) {
+           this.rewLayout.visibility = View.VISIBLE
             object : CountDownTimer(500, 1000) {
                 override fun onTick(millisUntilFinished: Long) {//running functionality for now its no use
                 }
                 override fun onFinish() {
-                    rewLayout.visibility = View.GONE
+                    this@PlayerActivity.rewLayout.visibility = View.GONE
                 }
             }.start()
 
 
-            player.seekTo(currentPosition - 30000)
+            this.player.seekTo(currentPosition - 30000)
 
             // We pressed on the right
-        } else if (e.x > (sWidth / 2)) {
-            forLayout.visibility = View.VISIBLE
+        } else if (e.x > (this.sWidth / 2)) {
+            this.forLayout.visibility = View.VISIBLE
             object : CountDownTimer(500, 1000) {
                 override fun onTick(millisUntilFinished: Long) {//running functionality for now its no use
                 }
                 override fun onFinish() {
-                    forLayout.visibility = View.GONE
+                    this@PlayerActivity.forLayout.visibility = View.GONE
                 }
             }.start()
 
-            player.seekTo(currentPosition + 30000)
+            this.player.seekTo(currentPosition + 30000)
 
         }
 
@@ -623,7 +615,7 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
     override fun onStart() {
         super.onStart()
 
-        val decorView: View = window.decorView
+        val decorView: View = this.window.decorView
 
         val uiOptions: Int = (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                 or View.SYSTEM_UI_FLAG_FULLSCREEN)

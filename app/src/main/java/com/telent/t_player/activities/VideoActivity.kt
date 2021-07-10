@@ -14,6 +14,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.telent.t_player.R
 import com.telent.t_player.adapter.VideoRecyclerAdapter
@@ -35,6 +36,8 @@ class VideoActivity : AppCompatActivity() {
     var bucketTitle = "Internal Storage"
     lateinit var sharedPreferences: SharedPreferences
 
+    lateinit var refresher:SwipeRefreshLayout
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_video)
@@ -42,6 +45,13 @@ class VideoActivity : AppCompatActivity() {
                 getString(R.string.shared_value_file),
                 Context.MODE_PRIVATE
         )
+        refresher = findViewById(R.id.refresher)
+        refresher.setOnRefreshListener {
+
+            startActivity(intent)
+            finish()
+            refresher.isRefreshing = false
+        }
 
         listMain()
 
