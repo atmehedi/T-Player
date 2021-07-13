@@ -30,12 +30,15 @@ import kotlin.math.ceil
 
 class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listener, View.OnTouchListener, GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
 
-
+    private var count = 0
     private var flag = false
+    private var repeatMode = false
     private var vidUri: String? = "null"
     private var vidName: String? = "null"
     private var vidWidth: String? = "null"
     private var position: String? = "null"
+    private var videoBucket:ArrayList<String>? = null
+
     private var prevBrightness: String? = "0.01f"
 
     private lateinit var playerview: PlayerView
@@ -86,10 +89,13 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
 
    private lateinit var centerText:TextView
 
+   private lateinit var repeat:ImageView
+   private lateinit var speed:TextView
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         this.setContentView(R.layout.activity_player)
-
 
 
 
@@ -137,6 +143,9 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
             this.vidName = this.intent.getStringExtra("videoName")
             this.vidWidth = this.intent.getStringExtra("videoWidth")
             this.position = this.intent.getStringExtra("position")
+            videoBucket = intent.getStringArrayListExtra("videoBucket") //video id accepted
+
+            println(videoBucket)
 
 
             if (this.vidUri == null) {
@@ -309,7 +318,10 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
         if (fileName !== null) {
             this.vidName = fileName
         }
-
+        repeat.setOnClickListener(this)
+        speed.setOnClickListener(this)
+        player.setHandleAudioBecomingNoisy(true)
+        player.addListener(this)
 
 
         this.videoTitle.text = this.vidName
@@ -317,7 +329,6 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
         this.player.playWhenReady
         this.player.volume
         this.player.play()
-        println(player.audioFormat)
 
     }
 
@@ -346,6 +357,9 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
         this.forLayout = this.playerview.findViewById(R.id.forLayout)
 
         this.centerText = this.playerview.findViewById(R.id.centerText)
+
+        repeat = playerview.findViewById(R.id.repeat)
+        speed = playerview.findViewById(R.id.speed)
 
     }
 
@@ -413,6 +427,48 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
                 this.controls.visibility = View.VISIBLE
             }
         }
+        if (v==repeat){
+            if (!repeatMode){
+                repeatMode=true
+                repeat.setImageResource(R.drawable.ic_baseline_repeat_one_24)
+            }else{
+                repeatMode = false
+                repeat.setImageResource(R.drawable.ic_baseline_repeat_24)
+
+            }
+        }
+
+        if (v==speed){
+            println(count)
+            when (count) {
+                0 -> {
+                    player.setPlaybackSpeed(1f)
+                    speed.text = getString(R.string.speedx1)
+                }
+                1 -> {
+                    player.setPlaybackSpeed(1.25f)
+                    speed.text = getString(R.string.speed125)
+                }
+                2 -> {
+                    player.setPlaybackSpeed(1.5f)
+                    speed.text = getString(R.string.speed15)
+                }
+                3 -> {
+                    player.setPlaybackSpeed(1.75f)
+                    speed.text = getString(R.string.speed17)
+                }
+                4 -> {
+                    player.setPlaybackSpeed(2f)
+                    speed.text = getString(R.string.speed2)
+                }
+                else -> {
+                    count = -1
+                }
+
+            }
+            count ++
+        }
+
     }
 
     override fun onBackPressed() {
@@ -621,6 +677,18 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
                 or View.SYSTEM_UI_FLAG_FULLSCREEN)
         decorView.systemUiVisibility = uiOptions
 
+    }
+
+    override fun onPlaybackStateChanged(state: Int) {
+
+        if (state==ExoPlayer.STATE_ENDED){
+            if(!repeatMode) {
+                this.finish()
+            }else{
+                player.seekTo(0)
+            }
+        }
+        super.onPlaybackStateChanged(state)
     }
 
 

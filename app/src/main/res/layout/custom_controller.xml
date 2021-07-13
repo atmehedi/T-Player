@@ -61,15 +61,46 @@
 
     </LinearLayout>
 
+<LinearLayout
+    android:id="@+id/sidepanel"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerVertical="true"
+    android:orientation="vertical"
+    >
 
- <ImageView
-     android:layout_width="wrap_content"
-     android:layout_height="wrap_content"
-     android:id="@+id/rotate"
-     android:layout_marginStart="10dp"
-     android:src="@drawable/ic_baseline_screen_rotation_24"
-     android:layout_centerVertical="true"
-     android:contentDescription="@string/rotate_displaye" />
+    <TextView
+        android:id="@+id/speed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/speedx1"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:layout_marginStart="10dp"
+        android:padding="6dp"
+        />
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/rotate"
+        android:layout_marginStart="10dp"
+        android:src="@drawable/ic_baseline_screen_rotation_24"
+        android:contentDescription="@string/rotate_displaye"
+        android:padding="6dp"
+        />
+    <ImageView
+        android:id="@+id/repeat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_baseline_repeat_24"
+        android:contentDescription="@string/exo_controls_repeat_one_description"
+        android:layout_marginStart="10dp"
+        android:padding="6dp"
+        />
+
+
+</LinearLayout>
+
 
     <LinearLayout
         android:layout_alignParentBottom="true"
@@ -280,7 +311,5 @@
             />
 
     </LinearLayout>
-
-
 
 </RelativeLayout>

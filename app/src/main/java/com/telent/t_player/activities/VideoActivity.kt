@@ -23,7 +23,7 @@ import com.telent.t_player.model.VideoModel
 class VideoActivity : AppCompatActivity() {
     lateinit var videoRecyclerView: RecyclerView
     private var videoAr = arrayListOf<VideoModel>()
-    lateinit var arraylistTitle: ArrayList<String>
+    private lateinit var arraylistTitle: ArrayList<String>
     lateinit var videoName: List<String>
     lateinit var arraylistId: HashMap<String, String>
     lateinit var arraylistVideoWidth: HashMap<String, String>
@@ -37,6 +37,8 @@ class VideoActivity : AppCompatActivity() {
     lateinit var sharedPreferences: SharedPreferences
 
     lateinit var refresher:SwipeRefreshLayout
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +56,7 @@ class VideoActivity : AppCompatActivity() {
         }
 
         listMain()
+
 
     }
 
@@ -112,6 +115,9 @@ class VideoActivity : AppCompatActivity() {
         videoRecyclerView.layoutManager = LinearLayoutManager(this)
         videoRecyclerView.adapter = VideoRecyclerAdapter(this, videoAr)
         videoRecyclerView.setHasFixedSize(true)
+
+
+
     }
 
     fun videosList() {

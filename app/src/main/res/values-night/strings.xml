@@ -14,4 +14,10 @@
     <string name="ok">OK</string>
     <string name="__30">-30</string>
     <string name="refresh">refresh</string>
+    <string name="speedx1">1X</string>
+    <string name="speed125">1.25X</string>
+    <string name="speed15">1.5X</string>
+    <string name="speed17">1.75X</string>
+    <string name="speed2">2X</string>
+    <string name="Tmsg">something wrong</string>
 </resources>
