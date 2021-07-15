@@ -8,8 +8,6 @@ import android.content.SharedPreferences
 import android.database.Cursor
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.media.MediaCodecList
-import android.media.MediaFormat.*
 import android.os.Bundle
 import android.os.Handler
 import android.provider.MediaStore
@@ -23,8 +21,6 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.audio.Ac3Util
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.telent.t_player.R
 import com.telent.t_player.adapter.RecyclerAdapter
@@ -32,22 +28,22 @@ import com.telent.t_player.model.Videos
 
 
 class MainActivity : AppCompatActivity() {
-    lateinit var recyclerView:RecyclerView
-    lateinit var arraylistTitle:ArrayList<String>
-    lateinit var arraylistId:HashMap<String, String>
-    lateinit var arraylistfid:HashMap<String, String>
-    lateinit var folderName:List<String>
+    lateinit var recyclerView: RecyclerView
+    lateinit var arraylistTitle: ArrayList<String>
+    lateinit var arraylistId: HashMap<String, String>
+    lateinit var arraylistfid: HashMap<String, String>
+    lateinit var folderName: List<String>
     private var videoFl = arrayListOf<Videos>()
     private var doubleBackToExitPressedOnce = false
-    lateinit var coordinator:CoordinatorLayout
-    lateinit var toolbar:Toolbar
+    lateinit var coordinator: CoordinatorLayout
+    lateinit var toolbar: Toolbar
     lateinit var sharedPreferences: SharedPreferences
-    lateinit var fab:FloatingActionButton
+    lateinit var fab: FloatingActionButton
     lateinit var frameLayout: FrameLayout
-    lateinit var yes:TextView
-    lateinit var no:TextView
+    lateinit var yes: TextView
+    lateinit var no: TextView
 
-    lateinit var swipeDown:SwipeRefreshLayout
+    lateinit var swipeDown: SwipeRefreshLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,11 +55,11 @@ class MainActivity : AppCompatActivity() {
         sharedPreferences = getSharedPreferences(
                 getString(R.string.shared_value_file), Context.MODE_PRIVATE)
 
-        if (intent!=null){
-           val exit =  intent.getStringExtra("exit")
-        if (exit =="exit"){
-            finish()
-        }
+        if (intent != null) {
+            val exit = intent.getStringExtra("exit")
+            if (exit == "exit") {
+                finish()
+            }
         }
 
 
@@ -72,14 +68,14 @@ class MainActivity : AppCompatActivity() {
         swipeDown.setOnRefreshListener {
             startActivity(intent)
             finish()
-        swipeDown.isRefreshing  = false
+            swipeDown.isRefreshing = false
         }
         displayVideoList()
 
     }
 
-    private fun displayVideoList(){
-            recyclerView = findViewById(R.id.recyclerView)
+    private fun displayVideoList() {
+        recyclerView = findViewById(R.id.recyclerView)
         coordinator = findViewById(R.id.coordinatorLayout)
         frameLayout = findViewById(R.id.frameLayout)
         fab = findViewById(R.id.fab)
@@ -93,32 +89,33 @@ class MainActivity : AppCompatActivity() {
 
         displayVideos()
         recyclerView.layoutManager = LinearLayoutManager(this)
-       recyclerView.adapter = RecyclerAdapter(this, videoFl)
+        recyclerView.adapter = RecyclerAdapter(this, videoFl)
         recyclerView.setHasFixedSize(true)
 
         setUpToolbar()
-       folderName =  folderName.sortedBy { it }
+        folderName = folderName.sortedBy { it }
 
 
-for( i in folderName){
-    val aa = arraylistTitle.groupingBy { it }.eachCount().filter { it.value > 1 }
+        for (i in folderName) {
+            val aa = arraylistTitle.groupingBy { it }.eachCount().filter { it.value > 1 }
 
-    var count = aa[i]
-    if (count==null){
-        count=1
+            var count = aa[i]
+            if (count == null) {
+                count = 1
+            }
+
+
+            val vidObject = Videos(i, "$count videos", arraylistId[i])
+            videoFl.add(vidObject)
+        }
     }
 
-
-    val vidObject = Videos(i, "$count videos", arraylistId[i])
-    videoFl.add(vidObject)
-}
-    }
     private fun displayVideos(): Cursor {
         val check = sharedPreferences.getString("Uri", null)
-        if (check == null){
+        if (check == null) {
             fab.visibility = View.GONE
         }
-        fab.setOnClickListener{
+        fab.setOnClickListener {
             val intent = Intent(this, PlayerActivity::class.java)
             val uri2 = sharedPreferences.getString("Uri", null)
             val videoName = sharedPreferences.getString("videoName", "Video Name.mp4")
@@ -153,18 +150,18 @@ for( i in folderName){
                 do {
                     cursor.getString(videoName)
                     val thisId = cursor.getLong(idColumn)
-                    val thisTitle:String? = cursor.getString(titleColumn)
+                    val thisTitle: String? = cursor.getString(titleColumn)
 
                     if (thisTitle != null) {
                         arraylistTitle.add(thisTitle)
                         arraylistId[thisTitle] = thisId.toString()
                     }
-                    if (thisTitle==null){
+                    if (thisTitle == null) {
                         arraylistTitle.add("Internal Storage")
                         arraylistId["Internal Storage"] = thisId.toString()
                     }
 
-                     folderName = arraylistTitle.distinct()
+                    folderName = arraylistTitle.distinct()
                 } while (cursor.moveToNext())
             }
         }
@@ -176,7 +173,8 @@ for( i in folderName){
         return cursor
 
     }
-    private fun setUpToolbar(){
+
+    private fun setUpToolbar() {
         setSupportActionBar(toolbar)
         supportActionBar?.title = getString(R.string.folderTop)
     }
@@ -230,7 +228,7 @@ for( i in folderName){
 
 
             }
-            R.id.refresh->{
+            R.id.refresh -> {
                 startActivity(intent)
                 finish()
             }

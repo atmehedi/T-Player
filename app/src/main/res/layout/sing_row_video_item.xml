@@ -28,31 +28,24 @@
                 android:id="@+id/txt_Title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toEndOf="@+id/img_thumb"
-                android:textColor="@color/txcolor"
-                android:textSize="18sp"
-                android:paddingStart="6dp"
                 android:layout_centerVertical="true"
-                />
+                android:layout_toEndOf="@+id/img_thumb"
+                android:paddingStart="6dp"
+                android:textColor="@color/txcolor"
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/txt_duration"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:textColor="@color/white"
-                android:background="@color/black"
-                android:textSize="10sp"
                 android:layout_marginStart="3dp"
-                />
+                android:background="@color/black"
+                android:textColor="@color/white"
+                android:textSize="10sp" />
 
         </RelativeLayout>
 
-        <TableRow
-            android:id="@+id/hr"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#444" />
 
     </androidx.cardview.widget.CardView>
 </RelativeLayout>

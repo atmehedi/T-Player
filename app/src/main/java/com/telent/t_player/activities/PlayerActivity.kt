@@ -1,5 +1,6 @@
 package com.telent.t_player.activities
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
@@ -10,14 +11,11 @@ import android.os.Bundle
 import android.os.CountDownTimer
 import android.provider.OpenableColumns
 import android.util.DisplayMetrics
-import android.view.GestureDetector
-import android.view.MotionEvent
-import android.view.View
-import android.view.WindowManager
+import android.view.*
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.exoplayer2.*
-import com.google.android.exoplayer2.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
+import com.google.android.exoplayer2.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector.ParametersBuilder
@@ -28,7 +26,9 @@ import com.telent.t_player.exo_content.TrackSelectionDialog
 import kotlin.math.ceil
 
 
-class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listener, View.OnTouchListener, GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
+class PlayerActivity : AppCompatActivity(), View.OnClickListener,
+        Player.Listener, View.OnTouchListener, GestureDetector.OnGestureListener,
+        GestureDetector.OnDoubleTapListener{
 
     private var count = 0
     private var flag = false
@@ -37,7 +37,7 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
     private var vidName: String? = "null"
     private var vidWidth: String? = "null"
     private var position: String? = "null"
-    private var videoBucket:ArrayList<String>? = null
+    private var videoBucket: ArrayList<String>? = null
 
     private var prevBrightness: String? = "0.01f"
 
@@ -80,19 +80,20 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
     private var vol = 1
     private var lockMode = false
     private lateinit var mGestureDetector: GestureDetector
-   private lateinit var brightLevel:TextView
-   private lateinit var infoLayout:RelativeLayout
-    private lateinit var levelIcon:ImageView
+    private lateinit var brightLevel: TextView
+    private lateinit var infoLayout: RelativeLayout
+    private lateinit var levelIcon: ImageView
 
-    private lateinit var rewLayout:LinearLayout
-    private lateinit var forLayout:LinearLayout
+    private lateinit var rewLayout: LinearLayout
+    private lateinit var forLayout: LinearLayout
 
-   private lateinit var centerText:TextView
+    private lateinit var centerText: TextView
 
-   private lateinit var repeat:ImageView
-   private lateinit var speed:TextView
+    private lateinit var repeat: ImageView
+    private lateinit var speed: TextView
 
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         this.setContentView(R.layout.activity_player)
@@ -166,11 +167,10 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
 
         val loadControl = DefaultLoadControl()
         val renderersFactory = DefaultRenderersFactory(this)
-                .setEnableDecoderFallback(true).setExtensionRendererMode(EXTENSION_RENDERER_MODE_PREFER) //Sw decoder
+                .setEnableDecoderFallback(true).setExtensionRendererMode(EXTENSION_RENDERER_MODE_ON) //Sw decoder
 
 
-
-       // val renderersFactory = DefaultRenderersFactory(this)
+        // val renderersFactory = DefaultRenderersFactory(this)
 
 
         this.player = SimpleExoPlayer.Builder(this, renderersFactory)
@@ -181,7 +181,7 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
         this.initializer()
 
 
-            this.deviceVolume = this.player.deviceVolume
+        this.deviceVolume = this.player.deviceVolume
 
 
 
@@ -189,7 +189,9 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
         this.mGestureDetector = GestureDetector(this, this)
 
         this.lock.setOnClickListener(this)
+
         this.totalLayout.setOnTouchListener(this)
+
 
         this.trackSelect.setOnClickListener(this)
         this.back.setOnClickListener(this)
@@ -226,9 +228,9 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
 
                 }
                 1 -> {
-                    this.playerview.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FILL
+                    this.playerview.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT
                     this.centerText.visibility = View.VISIBLE
-                    this.centerText.text = this.getString(R.string.fillToScreen)
+                    this.centerText.text = this.getString(R.string.height)
                     object : CountDownTimer(500, 1000) {
                         override fun onTick(millisUntilFinished: Long) {//running functionality for now its no use
                         }
@@ -237,7 +239,8 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
                             this@PlayerActivity.centerText.visibility = View.GONE
                         }
                     }.start()
-                    this.btnScale.setImageResource(R.drawable.ic_baseline_fullscreen_24)
+                    this.btnScale.setImageResource(R.drawable.ic_baseline_height_24)
+
                 }
                 2 -> {
                     this.playerview.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT
@@ -256,9 +259,9 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
 
                 }
                 3 -> {
-                    this.playerview.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT
+                    this.playerview.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FILL
                     this.centerText.visibility = View.VISIBLE
-                    this.centerText.text = this.getString(R.string.hundred)
+                    this.centerText.text = this.getString(R.string.fillToScreen)
                     object : CountDownTimer(500, 1000) {
                         override fun onTick(millisUntilFinished: Long) {//running functionality for now its no use
                         }
@@ -267,11 +270,9 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
                             this@PlayerActivity.centerText.visibility = View.GONE
                         }
                     }.start()
-                    this.btnScale.setImageResource(R.drawable.ic_baseline_height_24)
-
+                    this.btnScale.setImageResource(R.drawable.ic_baseline_fullscreen_24)
                 }
                 4 -> {
-                    this.playerview.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT
                     this.playerview.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH
                     this.centerText.visibility = View.VISIBLE
                     this.centerText.text = this.getString(R.string.width)
@@ -427,18 +428,18 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
                 this.controls.visibility = View.VISIBLE
             }
         }
-        if (v==repeat){
-            if (!repeatMode){
-                repeatMode=true
+        if (v == repeat) {
+            if (!repeatMode) {
+                repeatMode = true
                 repeat.setImageResource(R.drawable.ic_baseline_repeat_one_24)
-            }else{
+            } else {
                 repeatMode = false
                 repeat.setImageResource(R.drawable.ic_baseline_repeat_24)
 
             }
         }
 
-        if (v==speed){
+        if (v == speed) {
             println(count)
             when (count) {
                 0 -> {
@@ -461,12 +462,20 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
                     player.setPlaybackSpeed(2f)
                     speed.text = getString(R.string.speed2)
                 }
+                5 -> {
+                    player.setPlaybackSpeed(0.25f)
+                    speed.text = getString(R.string.speed025)
+                }
+                6 -> {
+                    player.setPlaybackSpeed(0.5f)
+                    speed.text = getString(R.string.speed05)
+                }
                 else -> {
                     count = -1
                 }
 
             }
-            count ++
+            count++
         }
 
     }
@@ -482,6 +491,7 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
         this.sharedPreferences.edit().putString("width", this.vidWidth).apply()
         this.sharedPreferences.edit().putString("position", this.player.currentPosition.toString()).apply()
     }
+
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {                   //O N T O U C H   C H E C K P O I N T
         this.mGestureDetector.onTouchEvent(event)
         return when (event!!.action) {
@@ -560,7 +570,8 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
 
                 true
             }
-            MotionEvent.ACTION_UP -> {                                  // O N  F I N G E R  U P
+            MotionEvent.ACTION_UP -> {                  // O N  F I N G E R  U P
+                v?.performClick()
                 this.rightClicked = false
                 this.leftClicked = false
                 this.deviceVolume = this.player.deviceVolume
@@ -591,6 +602,8 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
 
 
     }
+
+
 
     override fun onDown(e: MotionEvent?): Boolean {
         return true
@@ -633,10 +646,11 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
     override fun onDoubleTap(e: MotionEvent?): Boolean {
         val currentPosition = this.player.currentPosition
         if (e!!.x < (this.sWidth / 2)) {
-           this.rewLayout.visibility = View.VISIBLE
+            this.rewLayout.visibility = View.VISIBLE
             object : CountDownTimer(500, 1000) {
                 override fun onTick(millisUntilFinished: Long) {//running functionality for now its no use
                 }
+
                 override fun onFinish() {
                     this@PlayerActivity.rewLayout.visibility = View.GONE
                 }
@@ -651,6 +665,7 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
             object : CountDownTimer(500, 1000) {
                 override fun onTick(millisUntilFinished: Long) {//running functionality for now its no use
                 }
+
                 override fun onFinish() {
                     this@PlayerActivity.forLayout.visibility = View.GONE
                 }
@@ -681,10 +696,10 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener, Player.Listene
 
     override fun onPlaybackStateChanged(state: Int) {
 
-        if (state==ExoPlayer.STATE_ENDED){
-            if(!repeatMode) {
+        if (state == ExoPlayer.STATE_ENDED) {
+            if (!repeatMode) {
                 this.finish()
-            }else{
+            } else {
                 player.seekTo(0)
             }
         }

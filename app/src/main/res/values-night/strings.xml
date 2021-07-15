@@ -20,4 +20,11 @@
     <string name="speed17">1.75X</string>
     <string name="speed2">2X</string>
     <string name="Tmsg">something wrong</string>
+    <string name="speed025">0.25X</string>
+    <string name="speed05">0.5X</string>
+    <string name="change_folder_icon">Change Folder Icon</string>
+    <string name="change_background_color">Change background Color</string>
+    <string name="change_theme_color">Change Theme Color</string>
+    <string name="select_folder_icon">SELECT FOLDER ICON</string>
+    <string name="height">HEIGHT FIT</string>
 </resources>

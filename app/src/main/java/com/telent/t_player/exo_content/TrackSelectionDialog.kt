@@ -266,14 +266,14 @@ class TrackSelectionDialog : DialogFragment() {
 
         private fun isSupportedTrackType(trackType: Int): Boolean {
             return when (trackType) {
-           /*C.TRACK_TYPE_VIDEO,*/ C.TRACK_TYPE_AUDIO, C.TRACK_TYPE_TEXT -> true
+                /*C.TRACK_TYPE_VIDEO,*/ C.TRACK_TYPE_AUDIO, C.TRACK_TYPE_TEXT -> true
                 else -> false
             }
         }
 
         private fun getTrackTypeString(resources: Resources, trackType: Int): String {
             return when (trackType) {
-               // C.TRACK_TYPE_VIDEO -> resources.getString(R.string.exo_track_selection_title_video) //video tab
+                // C.TRACK_TYPE_VIDEO -> resources.getString(R.string.exo_track_selection_title_video) //video tab
                 C.TRACK_TYPE_AUDIO -> resources.getString(R.string.exo_track_selection_title_audio)
                 C.TRACK_TYPE_TEXT -> resources.getString(R.string.subtitle)
                 else -> throw IllegalArgumentException()

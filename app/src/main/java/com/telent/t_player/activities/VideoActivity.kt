@@ -36,8 +36,7 @@ class VideoActivity : AppCompatActivity() {
     var bucketTitle = "Internal Storage"
     lateinit var sharedPreferences: SharedPreferences
 
-    lateinit var refresher:SwipeRefreshLayout
-
+    lateinit var refresher: SwipeRefreshLayout
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,7 +87,6 @@ class VideoActivity : AppCompatActivity() {
             toolBarThing()
 
 
-
         }
 
     }
@@ -117,15 +115,14 @@ class VideoActivity : AppCompatActivity() {
         videoRecyclerView.setHasFixedSize(true)
 
 
-
     }
 
     fun videosList() {
         val check = sharedPreferences.getString("Uri", null)
-        if (check == null){
+        if (check == null) {
             fab2.visibility = View.GONE
         }
-        fab2.setOnClickListener{
+        fab2.setOnClickListener {
             val intent = Intent(this, PlayerActivity::class.java)
             val uri2 = sharedPreferences.getString("Uri", null)
             val videoName = sharedPreferences.getString("videoName", "Video Name.mp4")
@@ -138,9 +135,6 @@ class VideoActivity : AppCompatActivity() {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(intent)
         }
-
-
-
 
 
         val resolver: ContentResolver = contentResolver
@@ -196,11 +190,11 @@ class VideoActivity : AppCompatActivity() {
 
 
     }
+
     override fun onSupportNavigateUp(): Boolean {
         finish()
         return true
     }
-
 
 
 }

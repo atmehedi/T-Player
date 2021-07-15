@@ -13,18 +13,18 @@ import com.telent.t_player.R
 import com.telent.t_player.activities.PlayerActivity
 import com.telent.t_player.model.VideoModel
 
-class VideoRecyclerAdapter(val context:Context, private val itemList:ArrayList<VideoModel>):
+class VideoRecyclerAdapter(val context: Context, private val itemList: ArrayList<VideoModel>) :
         RecyclerView.Adapter<VideoRecyclerAdapter.ViewHolder>() {
-    inner class ViewHolder(itemView:View):RecyclerView.ViewHolder(itemView){
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        val itemName:TextView = itemView.findViewById(R.id.txt_Title)
-        val itemImage:ImageView = itemView.findViewById(R.id.img_thumb)
-        val itemCount:TextView = itemView.findViewById(R.id.txt_duration)
+        val itemName: TextView = itemView.findViewById(R.id.txt_Title)
+        val itemImage: ImageView = itemView.findViewById(R.id.img_thumb)
+        val itemCount: TextView = itemView.findViewById(R.id.txt_duration)
         val cView: androidx.cardview.widget.CardView = itemView.findViewById(R.id.cardView)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val v = LayoutInflater.from(parent.context).inflate(R.layout.sing_row_video_item,parent,false)
+        val v = LayoutInflater.from(parent.context).inflate(R.layout.sing_row_video_item, parent, false)
         return ViewHolder(v)
     }
 
@@ -37,11 +37,11 @@ class VideoRecyclerAdapter(val context:Context, private val itemList:ArrayList<V
 
         holder.cView.setOnClickListener {
             val intent = Intent(context, PlayerActivity::class.java)
-            intent.putExtra("videoUri",pic.resUri)
-           intent.putExtra("videoName",pic.resName)
-            intent.putExtra("videoWidth",pic.resWidth)
+            intent.putExtra("videoUri", pic.resUri)
+            intent.putExtra("videoName", pic.resName)
+            intent.putExtra("videoWidth", pic.resWidth)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-           context.startActivity(intent)
+            context.startActivity(intent)
 
 
         }
@@ -49,7 +49,7 @@ class VideoRecyclerAdapter(val context:Context, private val itemList:ArrayList<V
     }
 
     override fun getItemCount(): Int {
-       return itemList.size
+        return itemList.size
 
     }
 

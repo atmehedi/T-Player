@@ -21,20 +21,17 @@ class WelcomeActivity : AppCompatActivity() {
             val permission = 1
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
                 ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), permission)
-               // ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), permission)
+                // ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), permission)
             } else {
                 ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), permission)
-               // ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), permission)
+                // ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), permission)
             }
         } else {
             Handler().postDelayed({
                 val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
                 finish()
-            },500)
-
-         
-
+            }, 500)
 
 
         }
@@ -49,12 +46,12 @@ class WelcomeActivity : AppCompatActivity() {
                             .READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "Welcome to T-player", Toast.LENGTH_SHORT).show()
                 //work yet to done
-               // println("User has granted permission")
+                // println("User has granted permission")
                 Handler().postDelayed({
                     val intent = Intent(this, MainActivity::class.java)
                     startActivity(intent)
                     finish()
-                },500)
+                }, 500)
             } else {
 
                 Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show()
