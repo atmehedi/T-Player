@@ -56,4 +56,15 @@
     <string name="select_folder_icon">SELECT FOLDER ICON</string>
     <string name="ok">OK</string>
     <string name="height">HEIGHT FIT</string>
+    <string name="repeat_for_all_media">Repeat for All Media</string>
+    <string name="enable_this_to_repeat_each_media">Enable this to repeat each media</string>
+    <string name="focusInfo">Enable this to pause player while other app is playing sounds.</string>
+    <string name="default_playback_speed">Default playback speed</string>
+    <string name="speedAnnounce">Select default media playback speed.</string>
+    <string name="wakeMode">Keep screen On/Off</string>
+    <string name="wakeLog">Keep screen on while playing videos.</string>
+    <string name="decoder">Select default Decoder</string>
+    <string name="decInfo">Select deafult decoder for renderer acceleration</string>
+    <string name="x">%1$sX</string>
+
 </resources>

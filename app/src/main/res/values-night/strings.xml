@@ -27,4 +27,5 @@
     <string name="change_theme_color">Change Theme Color</string>
     <string name="select_folder_icon">SELECT FOLDER ICON</string>
     <string name="height">HEIGHT FIT</string>
+    <string name="decoder">Select default Decoder</string>
 </resources>

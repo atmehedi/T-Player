@@ -39,7 +39,8 @@
 
             <RelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                tools:ignore="UselessParent">
 
                 <com.google.android.material.switchmaterial.SwitchMaterial
                     android:id="@+id/F_mode"
@@ -53,10 +54,128 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
-
+                <TextView
+                    android:id="@+id/focusInfo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/F_mode"
+                    android:text="@string/focusInfo"
+                    android:textSize="16sp"
+                    android:paddingEnd="100dp"
+                    android:paddingStart="30dp"
+                    />
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/repeat4all"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:text="@string/repeat_for_all_media"
+                    android:textColor="@color/txcolor"
+                    android:textSize="24sp"
+                    android:layout_below="@id/focusInfo"
+                    android:layout_marginTop="12dp"
+                    />
+                <TextView
+                    android:id="@+id/repeatInfo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/repeat4all"
+                    android:text="@string/enable_this_to_repeat_each_media"
+                    android:paddingEnd="30dp"
+                    android:paddingStart="30dp"
+                    android:textSize="16sp"
+                    />
+                <TextView
+                    android:id="@+id/spinnerTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/default_playback_speed"
+                    android:layout_below="@id/repeatInfo"
+                    android:textColor="@color/txcolor"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:textSize="24sp"
+                    android:layout_marginTop="12dp"
+                    />
+                <Spinner
+                    android:layout_marginTop="12dp"
+                    android:id="@+id/speedSpinner"
+                    android:layout_width="70dp"
+                    android:layout_height="40dp"
+                    android:layout_below="@id/repeatInfo"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="10dp"
+                    android:padding="6dp"
+                    android:background="@drawable/custom_border"
+                    />
+                <TextView
+                    android:id="@+id/speedInfo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/spinnerTitle"
+                    android:text="@string/speedAnnounce"
+                    android:paddingEnd="30dp"
+                    android:paddingStart="30dp"
+                    android:textSize="16sp"
+                    />
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/wakeMode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:text="@string/wakeMode"
+                    android:textColor="@color/txcolor"
+                    android:textSize="24sp"
+                    android:layout_below="@id/speedInfo"
+                    android:layout_marginTop="12dp"
+                    />
+                <TextView
+                    android:id="@+id/wakeInfo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/wakeMode"
+                    android:text="@string/wakeLog"
+                    android:paddingEnd="30dp"
+                    android:paddingStart="30dp"
+                    android:textSize="16sp"
+                    />
+                <TextView
+                    android:id="@+id/decoderTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/decoder"
+                    android:layout_below="@id/wakeInfo"
+                    android:textColor="@color/txcolor"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginTop="12dp"
+                    android:textSize="24sp"
+                    />
+                <Spinner
+                    android:layout_marginTop="12dp"
+                    android:id="@+id/decoderSpinner"
+                    android:layout_width="70dp"
+                    android:layout_height="40dp"
+                    android:layout_below="@id/wakeInfo"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="10dp"
+                    android:padding="6dp"
+                    android:background="@drawable/custom_border"
+                    />
+                <TextView
+                    android:id="@+id/decoderInfo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/decoderTitle"
+                    android:text="@string/decInfo"
+                    android:paddingEnd="100dp"
+                    android:paddingStart="30dp"
+                    android:textSize="16sp"
+                    />
 
             </RelativeLayout>
-
 
         </FrameLayout>
 

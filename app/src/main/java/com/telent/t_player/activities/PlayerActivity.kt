@@ -16,6 +16,7 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON
+import com.google.android.exoplayer2.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector.ParametersBuilder
@@ -166,11 +167,15 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
         this.trackSelector = DefaultTrackSelector(this) //Audio track selector
 
         val loadControl = DefaultLoadControl()
-        val renderersFactory = DefaultRenderersFactory(this)
-                .setEnableDecoderFallback(true).setExtensionRendererMode(EXTENSION_RENDERER_MODE_ON) //Sw decoder
+        var renderersFactory = DefaultRenderersFactory(this)
+                .setEnableDecoderFallback(true).setExtensionRendererMode(EXTENSION_RENDERER_MODE_ON) //HW decoder
 
+        val decodeCheck = focusCheck.getString("decode_value","HW")
 
-        // val renderersFactory = DefaultRenderersFactory(this)
+        if (decodeCheck=="SW"){
+            renderersFactory = DefaultRenderersFactory(this)
+                    .setEnableDecoderFallback(true).setExtensionRendererMode(EXTENSION_RENDERER_MODE_PREFER)
+        }
 
 
         this.player = SimpleExoPlayer.Builder(this, renderersFactory)
@@ -316,9 +321,35 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
             this.playUndisterbed()
         }
 
+        //settings repeat check
+        val repeat4all = this.focusCheck.getString("check_repeat", "repeat_false")
+            if (repeat4all=="repeat_true"){
+                repeatMode = true
+                repeat.setImageResource(R.drawable.ic_baseline_repeat_one_24)
+            }
+
+        // screen suspension check
+        val wakeCheck = this.focusCheck.getString("wake_status", "wake_true")
+        if (wakeCheck=="wake_true"){
+            playerview.keepScreenOn  = true
+        }
+
+
+
         if (fileName !== null) {
             this.vidName = fileName
         }
+
+        //default playback speed set
+        val speedSet = focusCheck.getString("speed_value","1f")
+        if (speedSet !=null){
+
+            player.setPlaybackSpeed(speedSet.toFloat())
+            speed.text = getString(R.string.x,speedSet)
+
+        }
+
+
         repeat.setOnClickListener(this)
         speed.setOnClickListener(this)
         player.setHandleAudioBecomingNoisy(true)
@@ -543,11 +574,10 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
 
 
                     if (this.diffY != 0.0f && this.diffX < 20) {
-                        val prevVolume = this.upData.getInt("volume", this.deviceVolume)
+                        this.upData.getInt("volume", this.deviceVolume)
                         this.soundsBar.visibility = View.VISIBLE
 
                         this.vol = this.deviceVolume + (this.diffY / 30).toInt()
-                        println("dv = ${this.deviceVolume} , v= ${this.vol} ,prev = $prevVolume and ${this.diffY}")
                         if (this.vol > 30) {
 
                             this.vol = 30
