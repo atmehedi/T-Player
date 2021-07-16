@@ -82,7 +82,7 @@
                         android:layout_height="wrap_content"
                         android:layout_centerHorizontal="true"
                         android:layout_marginTop="20dp"
-                        android:background="@color/toolbar"
+                        android:background="@drawable/custom_border"
                         android:text="@string/ok"
                         android:textColor="@color/txcolor"
                         android:textSize="34sp" />

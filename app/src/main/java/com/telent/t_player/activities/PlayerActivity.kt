@@ -93,6 +93,12 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var repeat: ImageView
     private lateinit var speed: TextView
 
+    private lateinit var fForward:ImageView
+    private lateinit var fRewind:ImageView
+
+    private lateinit var forwardText:TextView
+    private lateinit var rewindText:TextView
+
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -185,6 +191,10 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
 
         this.initializer()
 
+
+
+        fForward.setOnClickListener(this)
+        fRewind.setOnClickListener(this)
 
         this.deviceVolume = this.player.deviceVolume
 
@@ -393,6 +403,12 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
         repeat = playerview.findViewById(R.id.repeat)
         speed = playerview.findViewById(R.id.speed)
 
+        fForward = playerview.findViewById(R.id.exo_ffwd)
+        fRewind = playerview.findViewById(R.id.exo_rew)
+
+        forwardText = playerview.findViewById(R.id.txt_fastForwar)
+        rewindText = playerview.findViewById(R.id.txt_fastRewind)
+
     }
 
 
@@ -507,6 +523,37 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
 
             }
             count++
+        }
+        if (v==fForward){
+            player.seekTo(player.currentPosition+10000)
+            forLayout.visibility = View.VISIBLE
+            forwardText.text = getString(R.string.f10)
+
+            object : CountDownTimer(500, 1000) {
+                override fun onTick(millisUntilFinished: Long) {//running functionality for now its no use
+                }
+
+                override fun onFinish() {
+                    this@PlayerActivity.forLayout.visibility = View.GONE
+                }
+            }.start()
+
+
+
+        }
+        if (v==fRewind){
+            player.seekTo(player.currentPosition-10000)
+            rewLayout.visibility = View.VISIBLE
+            rewindText.text = getString(R.string.r10)
+
+            object : CountDownTimer(500, 1000) {
+                override fun onTick(millisUntilFinished: Long) {//running functionality for now its no use
+                }
+
+                override fun onFinish() {
+                    this@PlayerActivity.rewLayout.visibility = View.GONE
+                }
+            }.start()
         }
 
     }
@@ -676,6 +723,7 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
     override fun onDoubleTap(e: MotionEvent?): Boolean {
         val currentPosition = this.player.currentPosition
         if (e!!.x < (this.sWidth / 2)) {
+            rewindText.text = getString(R.string.r30)
             this.rewLayout.visibility = View.VISIBLE
             object : CountDownTimer(500, 1000) {
                 override fun onTick(millisUntilFinished: Long) {//running functionality for now its no use
@@ -691,6 +739,7 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
 
             // We pressed on the right
         } else if (e.x > (this.sWidth / 2)) {
+            forwardText.text = getString(R.string.f30)
             this.forLayout.visibility = View.VISIBLE
             object : CountDownTimer(500, 1000) {
                 override fun onTick(millisUntilFinished: Long) {//running functionality for now its no use

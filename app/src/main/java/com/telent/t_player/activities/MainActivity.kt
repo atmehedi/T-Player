@@ -5,6 +5,7 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.res.ColorStateList
 import android.database.Cursor
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -74,6 +75,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+
     private fun displayVideoList() {
         recyclerView = findViewById(R.id.recyclerView)
         coordinator = findViewById(R.id.coordinatorLayout)
@@ -110,11 +112,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun displayVideos(): Cursor {
+     private fun displayVideos(): Cursor {
         val check = sharedPreferences.getString("Uri", null)
         if (check == null) {
             fab.visibility = View.GONE
         }
+
         fab.setOnClickListener {
             val intent = Intent(this, PlayerActivity::class.java)
             val uri2 = sharedPreferences.getString("Uri", null)

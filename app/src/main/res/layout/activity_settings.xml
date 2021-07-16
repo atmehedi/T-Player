@@ -28,6 +28,11 @@
                 android:theme="@style/ThemeOverlay.AppCompat.Dark"
 
                 />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/lineColor"
+                android:id="@+id/your_id"/>
         </com.google.android.material.appbar.AppBarLayout>
 
         <FrameLayout

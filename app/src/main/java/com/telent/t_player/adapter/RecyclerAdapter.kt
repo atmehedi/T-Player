@@ -38,7 +38,7 @@ class RecyclerAdapter(val context: Context, val itemList: ArrayList<Videos>) :
         holder.itemCount.text = pic.VidCount
 
 
-        Glide.with(context).load(R.drawable.ic_baseline_folder_open_24).into(holder.itemImage)
+        Glide.with(context).load(R.drawable.ic_baseline_folder_24).into(holder.itemImage)
 
         holder.cView.setOnClickListener {
             val intent = Intent(context, VideoActivity::class.java)

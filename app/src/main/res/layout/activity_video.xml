@@ -26,6 +26,11 @@
                 android:background="@color/toolbar"
                 android:minHeight="?attr/actionBarSize"
                 android:theme="@style/ThemeOverlay.AppCompat.Dark" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/lineColor"
+                android:id="@+id/your_id"/>
         </com.google.android.material.appbar.AppBarLayout>
 
         <FrameLayout
@@ -39,6 +44,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerViewVideo"
                     android:layout_width="match_parent"
@@ -47,6 +53,7 @@
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fab2"
+                app:backgroundTint="@color/lineColor2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end|bottom"

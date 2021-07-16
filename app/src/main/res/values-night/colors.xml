@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="bg">#090808</color>
+    <color name="bg">#2B2B2B</color>
     <color name="txcolor">#FFFDFC</color>
     <color name="vdcolo">#F5655B</color>
-    <color name="toolbar">#323232</color>
+    <color name="toolbar">#000000</color>
     <color name="controlsBag">#7E1C1816</color>
+    <color name="lineColor">#CF0000</color>
+    <color name="folderColor">#CF0000</color>
+    <color name="border">#CF0000</color>
+    <color name="lineColor2">#CF0000</color>
 </resources>
