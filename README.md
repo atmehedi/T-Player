@@ -1,6 +1,5 @@
 # T-Player
-<h1>T-Player</h1>
-<h2>FEATURES INCLUDES</h2></br>
+<h1>FEATURES INCLUDES</h1></br>
 </br>➔ Play any kind of media files for Example
 Video Contents and Audio Contents that supports are these
 Mp4,Mkv,Avi,M3u8,3gp,w
