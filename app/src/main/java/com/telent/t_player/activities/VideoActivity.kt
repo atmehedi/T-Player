@@ -38,6 +38,9 @@ class VideoActivity : AppCompatActivity() {
 
     lateinit var refresher: SwipeRefreshLayout
 
+    private lateinit var arrayListDate: HashMap<String, String>
+    private lateinit var arrayListDateModified: HashMap<String, String>
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,12 +84,37 @@ class VideoActivity : AppCompatActivity() {
             val uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI.toString() + "/" + arraylistId[i]
             val videoWidth = arraylistVideoWidth[i]
 
-            val vidObject = VideoModel(i, runTime, uri, videoWidth)
+            val vidObject = VideoModel(i, runTime, uri, videoWidth,arrayListDate[i], arrayListDateModified[i])
             videoAr.add(vidObject)
 
             toolBarThing()
 
 
+        }
+        sortingFunction()
+
+    }
+    private fun sortingFunction() {     //APPLYING SORT SELECTION
+
+        val sortValue =  sharedPreferences.getString("sortValue","byName")
+        val sortType = sharedPreferences.getString("sortType","byName")
+
+        when (sortValue) {
+            "Sort By date" -> {
+                videoAr.sortWith(compareBy { it.dateAdded })
+            }
+            "Sort By Last modified" -> {
+                videoAr.sortWith(compareBy {it.dateModified})
+            }
+            "Sort By name" -> {
+                videoAr.sortWith(compareBy { it.resName })
+            }
+            else -> {
+                videoAr.sortWith(compareBy { it.resName })
+            }
+        }
+        if (sortType =="Descending"){
+            videoAr.reverse()
         }
 
     }
@@ -100,11 +128,13 @@ class VideoActivity : AppCompatActivity() {
 
     private fun initializer() {
         videoRecyclerView = findViewById(R.id.recyclerViewVideo)
-        arraylistTitle = ArrayList<String>()
-        arraylistId = HashMap<String, String>()
-        arraylistVideoWidth = HashMap<String, String>()
-        arraylistduration = HashMap<String, String>()
-        videoName = ArrayList<String>()
+        arraylistTitle = ArrayList()
+        arraylistId = HashMap()
+        arraylistVideoWidth = HashMap()
+        arraylistduration = HashMap()
+        videoName = ArrayList()
+        arrayListDate = HashMap()
+        arrayListDateModified = HashMap()
         coordinator = findViewById(R.id.coordinatorLayout)
         frameLayout = findViewById(R.id.frameLayout)
         toolbar = findViewById(R.id.toolBar)
@@ -159,6 +189,8 @@ class VideoActivity : AppCompatActivity() {
                 val videoWidth = cursor.getColumnIndex(MediaStore.Video.Media.WIDTH)
                 val bucketColumn: Int = cursor.getColumnIndex(MediaStore.Video.Media.BUCKET_ID)
                 val durationColumn: Int = cursor.getColumnIndex(MediaStore.Video.Media.DURATION)
+                val dateColumn = cursor.getColumnIndex(MediaStore.Video.Media.DATE_ADDED)
+                val dateModifiedColumn  = cursor.getColumnIndex(MediaStore.Video.Media.DATE_MODIFIED)
                 do {
                     val fName = cursor.getString(foldername)
                     val thisId = cursor.getLong(idColumn)
@@ -166,6 +198,8 @@ class VideoActivity : AppCompatActivity() {
                     val bucket = cursor.getString(bucketColumn)
                     val duration: String? = cursor.getString(durationColumn)
                     val width = cursor.getString(videoWidth)
+                    val dateAdded = cursor.getString(dateColumn)
+                    val dateModified = cursor.getString(dateModifiedColumn)
 
 
                     if (bucket == folderId) {
@@ -173,6 +207,8 @@ class VideoActivity : AppCompatActivity() {
                             arraylistduration[thisTitle] = duration
                             arraylistId[thisTitle] = thisId.toString()
                             arraylistVideoWidth[thisTitle] = width
+                            arrayListDate[thisTitle] = dateAdded
+                            arrayListDateModified[thisTitle] = dateModified
                             if (fName != null) {
                                 bucketTitle = fName
                             }

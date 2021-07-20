@@ -5,7 +5,6 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.res.ColorStateList
 import android.database.Cursor
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -13,9 +12,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.provider.MediaStore
 import android.view.*
-import android.widget.FrameLayout
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -26,25 +23,46 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.telent.t_player.R
 import com.telent.t_player.adapter.RecyclerAdapter
 import com.telent.t_player.model.Videos
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 
 class MainActivity : AppCompatActivity() {
-    lateinit var recyclerView: RecyclerView
-    lateinit var arraylistTitle: ArrayList<String>
-    lateinit var arraylistId: HashMap<String, String>
-    lateinit var arraylistfid: HashMap<String, String>
-    lateinit var folderName: List<String>
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var arraylistTitle: ArrayList<String>
+    private lateinit var arrayListDate: HashMap<String, String>
+    private lateinit var arrayListDateModified: HashMap<String, String>
+    private lateinit var arraylistId: HashMap<String, String>
+    private lateinit var arraylistfid: HashMap<String, String>
+    private lateinit var folderName: List<String>
     private var videoFl = arrayListOf<Videos>()
     private var doubleBackToExitPressedOnce = false
-    lateinit var coordinator: CoordinatorLayout
-    lateinit var toolbar: Toolbar
-    lateinit var sharedPreferences: SharedPreferences
-    lateinit var fab: FloatingActionButton
-    lateinit var frameLayout: FrameLayout
-    lateinit var yes: TextView
-    lateinit var no: TextView
+    private lateinit var coordinator: CoordinatorLayout
+    private lateinit var toolbar: Toolbar
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var fab: FloatingActionButton
+    private lateinit var frameLayout: FrameLayout
+    private lateinit var yes: TextView
+    private lateinit var no: TextView
 
-    lateinit var swipeDown: SwipeRefreshLayout
+    private lateinit var apply: TextView
+    private lateinit var cancel: TextView
+
+    private lateinit var swipeDown: SwipeRefreshLayout
+
+    private lateinit var vidObject: Videos
+
+    private lateinit var radioGroup:RadioGroup
+    private lateinit var radioGroup2:RadioGroup
+    private lateinit var radioDate:RadioButton
+    private lateinit var radioname:RadioButton
+    private lateinit var radioModified:RadioButton
+
+    private lateinit var radioAsc:RadioButton
+    private lateinit var radioDesc:RadioButton
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,6 +74,8 @@ class MainActivity : AppCompatActivity() {
         sharedPreferences = getSharedPreferences(
                 getString(R.string.shared_value_file), Context.MODE_PRIVATE)
 
+
+
         if (intent != null) {
             val exit = intent.getStringExtra("exit")
             if (exit == "exit") {
@@ -66,12 +86,14 @@ class MainActivity : AppCompatActivity() {
 
         swipeDown = findViewById(R.id.swipeDown)
 
+
+        displayVideoList()
         swipeDown.setOnRefreshListener {
             startActivity(intent)
             finish()
             swipeDown.isRefreshing = false
         }
-        displayVideoList()
+
 
     }
 
@@ -86,16 +108,27 @@ class MainActivity : AppCompatActivity() {
 
         toolbar = findViewById(R.id.toolBar)
         arraylistTitle = ArrayList()
+        arrayListDate = HashMap()
+        arrayListDateModified = HashMap()
         arraylistId = HashMap()
         arraylistfid = HashMap()
 
+        folderName = listOf()
+
         displayVideos()
+
+
+
+
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = RecyclerAdapter(this, videoFl)
         recyclerView.setHasFixedSize(true)
 
+
+
         setUpToolbar()
-        folderName = folderName.sortedBy { it }
+         // folderName = folderName.sortedBy { it }
+
 
 
         for (i in folderName) {
@@ -107,12 +140,43 @@ class MainActivity : AppCompatActivity() {
             }
 
 
-            val vidObject = Videos(i, "$count videos", arraylistId[i])
+            vidObject = Videos(i, "$count videos", arraylistId[i], arrayListDate[i], arrayListDateModified[i])
             videoFl.add(vidObject)
+
+
         }
+
+
+        sortingFunction()
+
     }
 
-     private fun displayVideos(): Cursor {
+    private fun sortingFunction() {     //APPLYING SORT SELECTION
+
+      val sortValue =  sharedPreferences.getString("sortValue","byName")
+        val sortType = sharedPreferences.getString("sortType","byName")
+
+        when (sortValue) {
+            "Sort By date" -> {
+                videoFl.sortWith(compareBy { it.dateAdded })
+            }
+            "Sort By Last modified" -> {
+                videoFl.sortWith(compareBy {it.dateModified})
+            }
+            "Sort By name" -> {
+                videoFl.sortWith(compareBy { it.vidTitle })
+            }
+            else -> {
+                videoFl.sortWith(compareBy { it.vidTitle })
+            }
+        }
+            if (sortType =="Descending"){
+            videoFl.reverse()
+                }
+
+    }
+
+    private fun displayVideos(): Cursor {
         val check = sharedPreferences.getString("Uri", null)
         if (check == null) {
             fab.visibility = View.GONE
@@ -134,8 +198,9 @@ class MainActivity : AppCompatActivity() {
 
         val resolver: ContentResolver = contentResolver
         val uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-        val orderBy = MediaStore.Video.Media.DATE_MODIFIED
-        val cursor: Cursor? = resolver.query(uri, null, null, null, "$orderBy ASC")
+       val orderBy = MediaStore.Video.Media.DEFAULT_SORT_ORDER
+
+        val cursor: Cursor? = resolver.query(uri, null, null, null, orderBy)
 
         when {
             cursor == null -> {
@@ -150,14 +215,21 @@ class MainActivity : AppCompatActivity() {
                 val videoName = cursor.getColumnIndex(MediaStore.Video.Media.DISPLAY_NAME)
                 val titleColumn: Int = cursor.getColumnIndex(MediaStore.Video.Media.BUCKET_DISPLAY_NAME)
                 val idColumn: Int = cursor.getColumnIndex(MediaStore.Video.Media.BUCKET_ID)
+                val dateColumn = cursor.getColumnIndex(MediaStore.Video.Media.DATE_ADDED)
+                val dateModifiedColumn  = cursor.getColumnIndex(MediaStore.Video.Media.DATE_MODIFIED)
                 do {
                     cursor.getString(videoName)
                     val thisId = cursor.getLong(idColumn)
                     val thisTitle: String? = cursor.getString(titleColumn)
+                    val dateAdded = cursor.getString(dateColumn)
+                    val dateModified = cursor.getString(dateModifiedColumn)
 
                     if (thisTitle != null) {
                         arraylistTitle.add(thisTitle)
                         arraylistId[thisTitle] = thisId.toString()
+                        arrayListDate[thisTitle] = dateAdded
+                        arrayListDateModified[thisTitle] = dateModified
+
                     }
                     if (thisTitle == null) {
                         arraylistTitle.add("Internal Storage")
@@ -235,9 +307,110 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
                 finish()
             }
+// sort functionality
+            R.id.sort -> {
+                val dialog = Dialog(this)
+
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+                dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                dialog.setContentView(R.layout.sort_dialog)
+                apply = dialog.findViewById(R.id.apply)
+                cancel = dialog.findViewById(R.id.cancel)
+                radioGroup = dialog.findViewById(R.id.radioGroup)
+                radioGroup2 = dialog.findViewById(R.id.radioGroup2)
+
+                radioDesc = dialog.findViewById(R.id.desc1)
+                radioAsc = dialog.findViewById(R.id.asc)
+
+                radioModified = dialog.findViewById(R.id.modified)
+                radioname = dialog.findViewById(R.id.nameBy)
+                radioDate = dialog.findViewById(R.id.date1)
+
+                defaultRadioCheck()
+
+                  radioGroup.setOnCheckedChangeListener { group, checkedId ->
+
+                    group.findViewById<View>(checkedId) as RadioButton
+                }
+                radioGroup2.setOnCheckedChangeListener { group, checkedId ->
+
+                    group.findViewById<View>(checkedId) as RadioButton
+                }
+                apply.setOnClickListener {
+                    val selectedId = radioGroup.checkedRadioButtonId
+                    val selectedId2 = radioGroup2.checkedRadioButtonId
+                    if (selectedId == -1) {
+                       println("no option selected")
+                    } else {
+                        val radioButton = radioGroup
+                                .findViewById<View>(selectedId) as RadioButton
+
+                        radioButton.isChecked = true
+
+//                        Toast.makeText(this@MainActivity,
+//                                radioButton.text,
+//                                Toast.LENGTH_SHORT)
+//                                .show()
+                        sharedPreferences.edit().putString("sortValue",radioButton.text.toString()).apply()
+
+
+                    }
+                    if (selectedId2 == -1) {
+                        Toast.makeText(this@MainActivity,
+                                "No option selected",
+                                Toast.LENGTH_SHORT)
+                                .show()
+                    } else {
+                        val radioButton2 = radioGroup2
+                                .findViewById<View>(selectedId2) as RadioButton
+
+//                        Toast.makeText(this@MainActivity,
+//                                radioButton2.text,
+//                                Toast.LENGTH_SHORT)
+//                                .show()
+
+                        sharedPreferences.edit().putString("sortType",radioButton2.text.toString()).apply()
+
+                    }
+                    startActivity(intent)
+                    finish()
+
+                }
+
+                cancel.setOnClickListener {
+                    dialog.dismiss()
+                }
+                dialog.create()
+                dialog.show()
+            }
         }
 
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun defaultRadioCheck() {
+        val sortValue =  sharedPreferences.getString("sortValue","byName")
+        val sortType = sharedPreferences.getString("sortType","byName")
+
+        when (sortValue) {
+            "Sort By date" -> {
+                radioGroup.check(radioDate.id)
+            }
+            "Sort By Last modified" -> {
+                radioGroup.check(radioModified.id)
+            }
+            "Sort By name" -> {
+                radioGroup.check(radioname.id)
+            }
+            else -> {
+                radioGroup.check(radioname.id)
+            }
+        }
+        if (sortType =="Descending"){
+            radioGroup2.check(radioDesc.id)
+        }else{
+            radioGroup2.check(radioAsc.id)
+        }
     }
 
     override fun onBackPressed() {
@@ -245,6 +418,7 @@ class MainActivity : AppCompatActivity() {
             super.onBackPressed()
             return
         }
+
 
         doubleBackToExitPressedOnce = true
         Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show()

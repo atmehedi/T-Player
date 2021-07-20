@@ -372,6 +372,9 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
         this.player.volume
         this.player.play()
 
+
+        speed.text = getString(R.string.speedx1)
+
     }
 
     private fun initializer() {                              //I N I T I A L I Z A R   C H E C K P O I N T
@@ -487,38 +490,35 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
         }
 
         if (v == speed) {
-            println(count)
             when (count) {
                 0 -> {
-                    player.setPlaybackSpeed(1f)
-                    speed.text = getString(R.string.speedx1)
-                }
-                1 -> {
                     player.setPlaybackSpeed(1.25f)
                     speed.text = getString(R.string.speed125)
                 }
-                2 -> {
+                1 -> {
                     player.setPlaybackSpeed(1.5f)
                     speed.text = getString(R.string.speed15)
                 }
-                3 -> {
+                2 -> {
                     player.setPlaybackSpeed(1.75f)
                     speed.text = getString(R.string.speed17)
                 }
-                4 -> {
+                3 -> {
                     player.setPlaybackSpeed(2f)
                     speed.text = getString(R.string.speed2)
                 }
-                5 -> {
+                4 -> {
                     player.setPlaybackSpeed(0.25f)
                     speed.text = getString(R.string.speed025)
                 }
-                6 -> {
+                5 -> {
                     player.setPlaybackSpeed(0.5f)
                     speed.text = getString(R.string.speed05)
                 }
                 else -> {
                     count = -1
+                    player.setPlaybackSpeed(1f)
+                    speed.text = getString(R.string.speedx1)
                 }
 
             }

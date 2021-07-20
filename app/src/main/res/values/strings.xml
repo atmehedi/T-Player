@@ -21,7 +21,7 @@
     <string name="option_1">Settings</string>
     <string name="option_2">About</string>
     <string name="option_3">Exit</string>
-    <!-- TODO: Remove or change this placeholder text -->
+
     <string name="createdby">Created By</string>
     <string name="Mehedi">A T MEHEDI HASSAN</string>
     <string name="t_player_1_0">T-PLAYER 1.0</string>
@@ -70,5 +70,16 @@
     <string name="f10">+10</string>
     <string name="f30">+30</string>
     <string name="r30">-30</string>
+    <string name="guesture_tutorial">guesture tutorial</string>
+    <string name="sort">Sort Order</string>
+    <string name="sortTitle">Sort</string>
+    <string name="by_name">Sort By name</string>
+    <string name="sort_by_last_modified">Sort By Last modified</string>
+    <string name="sort_by_date">Sort By date</string>
+    <string name="cancel">Cancel</string>
+    <string name="apply">Apply</string>
+    <string name="ascending">Ascending</string>
+    <string name="descending">Descending</string>
+
 
 </resources>
