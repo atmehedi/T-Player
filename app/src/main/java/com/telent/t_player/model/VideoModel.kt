@@ -6,6 +6,7 @@ data class VideoModel(
         val resUri: String,
         val resWidth: String?,
         val dateAdded:String?,
-        val dateModified:String?
+        val dateModified:String?,
+        val folderName:String?
 )
 

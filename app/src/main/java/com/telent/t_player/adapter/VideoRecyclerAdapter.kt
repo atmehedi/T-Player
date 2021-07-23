@@ -40,11 +40,12 @@ class VideoRecyclerAdapter(val context: Context, private val itemList: ArrayList
             intent.putExtra("videoUri", pic.resUri)
             intent.putExtra("videoName", pic.resName)
             intent.putExtra("videoWidth", pic.resWidth)
+            intent.putExtra("currentFolder",pic.folderName)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             context.startActivity(intent)
 
-
         }
+
 
     }
 

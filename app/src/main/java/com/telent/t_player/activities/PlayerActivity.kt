@@ -1,14 +1,17 @@
 package com.telent.t_player.activities
 
 import android.annotation.SuppressLint
+import android.content.ContentResolver
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
+import android.database.Cursor
 import android.graphics.Point
 import android.media.AudioManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.util.DisplayMetrics
 import android.view.*
@@ -22,6 +25,7 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector.ParametersBuilder
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.telent.t_player.R
 import com.telent.t_player.exo_content.TrackSelectionDialog
 import kotlin.math.ceil
@@ -38,7 +42,8 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
     private var vidName: String? = "null"
     private var vidWidth: String? = "null"
     private var position: String? = "null"
-    private var videoBucket: ArrayList<String>? = null
+    private var currentFolder:String?= "null"
+
 
     private var prevBrightness: String? = "0.01f"
 
@@ -59,8 +64,8 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
     private var isShowingTrackSelectionDialog = false
     private lateinit var lock: ImageView
     private lateinit var controls: RelativeLayout
-    private lateinit var brightnessBar: ProgressBar
-    private lateinit var soundsBar: ProgressBar
+    private lateinit var brightnessBar:LinearProgressIndicator
+    private lateinit var soundsBar: LinearProgressIndicator
     private lateinit var totalLayout: RelativeLayout
 
     private var basex = 0f
@@ -98,6 +103,16 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
 
     private lateinit var forwardText:TextView
     private lateinit var rewindText:TextView
+
+    private lateinit var currentUris:ArrayList<String>
+    private lateinit var currentVideoName:ArrayList<String>
+
+    private lateinit var next:ImageView
+    private lateinit var prev:ImageView
+
+    private var currentMedia:Int = 0
+    private var playbackDiff = 1
+    private var playbackCount = 1
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -151,9 +166,7 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
             this.vidName = this.intent.getStringExtra("videoName")
             this.vidWidth = this.intent.getStringExtra("videoWidth")
             this.position = this.intent.getStringExtra("position")
-            videoBucket = intent.getStringArrayListExtra("videoBucket") //video id accepted
 
-            println(videoBucket)
 
 
             if (this.vidUri == null) {
@@ -191,10 +204,15 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
 
         this.initializer()
 
+        nextPrevHandler()
+
+        currentMedia = currentUris.indexOf(vidUri)// INDEX OF ARRAY URI S
 
 
-        fForward.setOnClickListener(this)
-        fRewind.setOnClickListener(this)
+
+
+        next.setOnClickListener(this)
+        prev.setOnClickListener(this)
 
         this.deviceVolume = this.player.deviceVolume
 
@@ -321,7 +339,9 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
         if (data != null) {
             this.vidUri = data.toString()
         }
+
         this.player.setMediaItem(MediaItem.fromUri(this.vidUri.toString()))
+
 
         if (this.position != null) {
             this.player.seekTo(this.position!!.toLong())
@@ -344,14 +364,13 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
             playerview.keepScreenOn  = true
         }
 
-
-
         if (fileName !== null) {
             this.vidName = fileName
         }
 
         //default playback speed set
-        val speedSet = focusCheck.getString("speed_value","1f")
+        val speedSet = focusCheck.getString("speed_value","1")
+
         if (speedSet !=null){
 
             player.setPlaybackSpeed(speedSet.toFloat())
@@ -373,7 +392,7 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
         this.player.play()
 
 
-        speed.text = getString(R.string.speedx1)
+
 
     }
 
@@ -406,11 +425,19 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
         repeat = playerview.findViewById(R.id.repeat)
         speed = playerview.findViewById(R.id.speed)
 
-        fForward = playerview.findViewById(R.id.exo_ffwd)
-        fRewind = playerview.findViewById(R.id.exo_rew)
+
 
         forwardText = playerview.findViewById(R.id.txt_fastForwar)
         rewindText = playerview.findViewById(R.id.txt_fastRewind)
+
+        currentUris = ArrayList()
+        currentVideoName = ArrayList()
+
+        next = playerview.findViewById(R.id.next)
+        prev = playerview.findViewById(R.id.prev)
+
+
+
 
     }
 
@@ -524,38 +551,45 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
             }
             count++
         }
-        if (v==fForward){
-            player.seekTo(player.currentPosition+10000)
-            forLayout.visibility = View.VISIBLE
-            forwardText.text = getString(R.string.f10)
-
-            object : CountDownTimer(500, 1000) {
-                override fun onTick(millisUntilFinished: Long) {//running functionality for now its no use
-                }
-
-                override fun onFinish() {
-                    this@PlayerActivity.forLayout.visibility = View.GONE
-                }
-            }.start()
-
-
-
+        if (v==next){
+           playNext()
         }
-        if (v==fRewind){
-            player.seekTo(player.currentPosition-10000)
-            rewLayout.visibility = View.VISIBLE
-            rewindText.text = getString(R.string.r10)
-
-            object : CountDownTimer(500, 1000) {
-                override fun onTick(millisUntilFinished: Long) {//running functionality for now its no use
-                }
-
-                override fun onFinish() {
-                    this@PlayerActivity.rewLayout.visibility = View.GONE
-                }
-            }.start()
+        if (v==prev){
+            playPrev()
         }
 
+
+    }
+
+    private fun playPrev() {
+        try {
+           currentMedia--
+            player.stop()
+            player.setMediaItem(MediaItem.fromUri(currentUris[currentMedia]))
+            videoTitle.text = currentVideoName[currentMedia]
+            player.prepare()
+            player.playWhenReady
+        }catch (e:Exception){
+            Toast.makeText(this, "No more going back!", Toast.LENGTH_SHORT).show()
+            finish()
+        }
+
+    }
+
+    private fun playNext() {
+        try {
+           currentMedia++
+            player.stop()
+            player.setMediaItem(MediaItem.fromUri(currentUris[currentMedia]))
+            videoTitle.text = currentVideoName[currentMedia]
+            player.prepare()
+            player.playWhenReady
+
+        }catch (e:Exception){
+            Toast.makeText(this, "Last Video Played !", Toast.LENGTH_SHORT).show()
+            finish()
+        }
+//        playbackDiff++
     }
 
     override fun onBackPressed() {
@@ -611,10 +645,9 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
 
                         //for text
                         this.infoLayout.visibility = View.VISIBLE
-                        val textValueB = this.brightness * 10
+                        val textValueB = this.brightness * 30
                         this.brightLevel.text = textValueB.toInt().toString()
                         this.levelIcon.setImageResource(R.drawable.ic_baseline_brightness_medium_24)
-
 
                     }
                 } else if (this.leftClicked) {
@@ -701,6 +734,7 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
             this.lock.visibility = View.VISIBLE
         }
 
+
         return true
     }
 
@@ -723,7 +757,7 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
     override fun onDoubleTap(e: MotionEvent?): Boolean {
         val currentPosition = this.player.currentPosition
         if (e!!.x < (this.sWidth / 2)) {
-            rewindText.text = getString(R.string.r30)
+            rewindText.text = getString(R.string.r10)
             this.rewLayout.visibility = View.VISIBLE
             object : CountDownTimer(500, 1000) {
                 override fun onTick(millisUntilFinished: Long) {//running functionality for now its no use
@@ -735,11 +769,14 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
             }.start()
 
 
-            this.player.seekTo(currentPosition - 30000)
+            this.player.seekTo(currentPosition - 10000)
+
+
 
             // We pressed on the right
         } else if (e.x > (this.sWidth / 2)) {
-            forwardText.text = getString(R.string.f30)
+
+            forwardText.text = getString(R.string.f10)
             this.forLayout.visibility = View.VISIBLE
             object : CountDownTimer(500, 1000) {
                 override fun onTick(millisUntilFinished: Long) {//running functionality for now its no use
@@ -750,7 +787,7 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
                 }
             }.start()
 
-            this.player.seekTo(currentPosition + 30000)
+            this.player.seekTo(currentPosition + 10000)
 
         }
 
@@ -777,12 +814,63 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
 
         if (state == ExoPlayer.STATE_ENDED) {
             if (!repeatMode) {
-                this.finish()
+                playNext()
             } else {
                 player.seekTo(0)
             }
         }
+
         super.onPlaybackStateChanged(state)
+    }
+
+    private fun nextPrevHandler():Cursor{
+        val resolver: ContentResolver = contentResolver
+        val uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+        val orderBy = MediaStore.Video.Media.DEFAULT_SORT_ORDER
+
+        val cursor: Cursor? = resolver.query(uri, null, null, null, orderBy)
+
+        when {
+            cursor == null -> {
+                // query failed, handle error.
+                println("cursor error")
+            }
+            !cursor.moveToFirst() -> {
+                // no media on the device
+                println("no media on device")
+            }
+            else -> {
+                val videoName1 = cursor.getColumnIndex(MediaStore.Video.Media.DISPLAY_NAME)
+                val bucketName = cursor.getColumnIndex(MediaStore.Video.Media.BUCKET_DISPLAY_NAME)
+                val dateColumn = cursor.getColumnIndex(MediaStore.Video.Media.DATE_ADDED)
+                val dateModifiedColumn  = cursor.getColumnIndex(MediaStore.Video.Media.DATE_MODIFIED)
+                val videoId = cursor.getColumnIndex(MediaStore.Video.Media._ID)
+                do {
+                    cursor.getString(videoName1)
+                    val dateAdded = cursor.getString(dateColumn)
+                    val dateModified = cursor.getString(dateModifiedColumn)
+                    val videoName = cursor.getString(videoName1)
+                    var bucketName1 = cursor.getString(bucketName)
+                    val videoId2 = cursor.getString(videoId)
+                    
+                    if (bucketName1==null){
+                        bucketName1="Internal Storage"
+                    }
+                    currentFolder = intent.getStringExtra("currentFolder")
+
+                    if(bucketName1==currentFolder){
+                        currentUris.add(MediaStore.Video.Media.EXTERNAL_CONTENT_URI.toString()+"/$videoId2")
+                        currentVideoName.add(videoName)
+                    }
+
+                } while (cursor.moveToNext())
+            }
+        }
+
+        cursor!!.setNotificationUri(this.contentResolver, uri)
+        cursor.close()
+        return cursor
+
     }
 
 

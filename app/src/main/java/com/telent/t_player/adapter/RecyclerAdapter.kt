@@ -13,7 +13,7 @@ import com.telent.t_player.R
 import com.telent.t_player.activities.VideoActivity
 import com.telent.t_player.model.Videos
 
-class RecyclerAdapter(val context: Context, val itemList: ArrayList<Videos>) :
+class RecyclerAdapter(val context: Context, private val itemList: ArrayList<Videos>) :
         RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
@@ -38,7 +38,7 @@ class RecyclerAdapter(val context: Context, val itemList: ArrayList<Videos>) :
         holder.itemCount.text = pic.VidCount
 
 
-        Glide.with(context).load(R.drawable.ic_baseline_folder_24).into(holder.itemImage)
+        Glide.with(context).load(R.drawable.folder).into(holder.itemImage)
 
         holder.cView.setOnClickListener {
             val intent = Intent(context, VideoActivity::class.java)

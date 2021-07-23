@@ -26,6 +26,7 @@ class VideoActivity : AppCompatActivity() {
     private lateinit var arraylistTitle: ArrayList<String>
     lateinit var videoName: List<String>
     lateinit var arraylistId: HashMap<String, String>
+    lateinit var arrayFolderName: HashMap<String, String>
     lateinit var arraylistVideoWidth: HashMap<String, String>
     lateinit var arraylistduration: HashMap<String, String>
     lateinit var coordinator: CoordinatorLayout
@@ -84,7 +85,7 @@ class VideoActivity : AppCompatActivity() {
             val uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI.toString() + "/" + arraylistId[i]
             val videoWidth = arraylistVideoWidth[i]
 
-            val vidObject = VideoModel(i, runTime, uri, videoWidth,arrayListDate[i], arrayListDateModified[i])
+            val vidObject = VideoModel(i, runTime, uri, videoWidth,arrayListDate[i], arrayListDateModified[i],arrayFolderName[i])
             videoAr.add(vidObject)
 
             toolBarThing()
@@ -130,6 +131,7 @@ class VideoActivity : AppCompatActivity() {
         videoRecyclerView = findViewById(R.id.recyclerViewVideo)
         arraylistTitle = ArrayList()
         arraylistId = HashMap()
+        arrayFolderName = HashMap()
         arraylistVideoWidth = HashMap()
         arraylistduration = HashMap()
         videoName = ArrayList()
@@ -147,7 +149,7 @@ class VideoActivity : AppCompatActivity() {
 
     }
 
-    fun videosList() {
+    private fun videosList() {
         val check = sharedPreferences.getString("Uri", null)
         if (check == null) {
             fab2.visibility = View.GONE
@@ -192,7 +194,7 @@ class VideoActivity : AppCompatActivity() {
                 val dateColumn = cursor.getColumnIndex(MediaStore.Video.Media.DATE_ADDED)
                 val dateModifiedColumn  = cursor.getColumnIndex(MediaStore.Video.Media.DATE_MODIFIED)
                 do {
-                    val fName = cursor.getString(foldername)
+                    var fName = cursor.getString(foldername)
                     val thisId = cursor.getLong(idColumn)
                     val thisTitle = cursor.getString(titleColumn)
                     val bucket = cursor.getString(bucketColumn)
@@ -205,13 +207,17 @@ class VideoActivity : AppCompatActivity() {
                     if (bucket == folderId) {
                         if (duration != null) {
                             arraylistduration[thisTitle] = duration
+
+                            if (fName == null){
+                                fName = "Internal Storage"
+                            }
+                            arrayFolderName[thisTitle] = fName
+
                             arraylistId[thisTitle] = thisId.toString()
                             arraylistVideoWidth[thisTitle] = width
                             arrayListDate[thisTitle] = dateAdded
                             arrayListDateModified[thisTitle] = dateModified
-                            if (fName != null) {
-                                bucketTitle = fName
-                            }
+                            bucketTitle = fName
                         }
                         arraylistTitle.add(thisTitle)
 
