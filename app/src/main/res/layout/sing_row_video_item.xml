@@ -9,7 +9,6 @@
         android:id="@+id/cardView"
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        android:padding="6dp"
         android:background="@color/bg"
         >
 
@@ -17,11 +16,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/bg"
+            android:padding="10dp"
           >
 
             <ImageView
                 android:id="@+id/img_thumb"
-                android:layout_width="80dp"
+                android:layout_width="100dp"
                 android:layout_height="match_parent"
                 android:contentDescription="@string/folder"
                 app:srcCompat="@drawable/ic_baseline_music_video_24" />
@@ -36,7 +36,7 @@
                 android:paddingEnd="6dp"
                 android:maxLines="3"
                 android:textColor="@color/txcolor"
-                android:textSize="18sp" />
+                 />
 
             <TextView
                 android:id="@+id/txt_duration"
@@ -47,7 +47,8 @@
                 android:background="@color/black"
                 android:textColor="@color/white"
                 android:textSize="10sp"
-                tools:ignore="SmallSp" />
+                tools:ignore="SmallSp"
+                />
 
         </RelativeLayout>
 

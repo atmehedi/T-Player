@@ -90,8 +90,9 @@ class MainActivity : AppCompatActivity() {
 
         displayVideoList()
         swipeDown.setOnRefreshListener {
-            startActivity(intent)
-            finish()
+            videoFl.clear()
+            displayVideoList()
+
             swipeDown.isRefreshing = false
         }
 
@@ -305,8 +306,8 @@ class MainActivity : AppCompatActivity() {
 
             }
             R.id.refresh -> {
-                startActivity(intent)
-                finish()
+                videoFl.clear()
+                displayVideoList()
             }
 // sort functionality
             R.id.sort -> {
@@ -347,11 +348,6 @@ class MainActivity : AppCompatActivity() {
                                 .findViewById<View>(selectedId) as RadioButton
 
                         radioButton.isChecked = true
-
-//                        Toast.makeText(this@MainActivity,
-//                                radioButton.text,
-//                                Toast.LENGTH_SHORT)
-//                                .show()
                         sharedPreferences.edit().putString("sortValue",radioButton.text.toString()).apply()
 
 
@@ -364,12 +360,6 @@ class MainActivity : AppCompatActivity() {
                     } else {
                         val radioButton2 = radioGroup2
                                 .findViewById<View>(selectedId2) as RadioButton
-
-//                        Toast.makeText(this@MainActivity,
-//                                radioButton2.text,
-//                                Toast.LENGTH_SHORT)
-//                                .show()
-
                         sharedPreferences.edit().putString("sortType",radioButton2.text.toString()).apply()
 
                     }

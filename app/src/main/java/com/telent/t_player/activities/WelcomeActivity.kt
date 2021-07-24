@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.text.TextUtils
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -27,7 +28,7 @@ class WelcomeActivity : AppCompatActivity() {
                 // ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), permission)
             }
         } else {
-            Handler().postDelayed({
+            Handler(Looper.getMainLooper()).postDelayed({
                 val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
                 finish()
@@ -47,7 +48,7 @@ class WelcomeActivity : AppCompatActivity() {
                 Toast.makeText(this, "Welcome to T-player", Toast.LENGTH_SHORT).show()
                 //work yet to done
                 // println("User has granted permission")
-                Handler().postDelayed({
+                Handler(Looper.getMainLooper()).postDelayed({
                     val intent = Intent(this, MainActivity::class.java)
                     startActivity(intent)
                     finish()

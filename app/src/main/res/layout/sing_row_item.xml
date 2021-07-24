@@ -21,20 +21,24 @@
 
             <ImageView
                 android:id="@+id/img_folder"
-                android:layout_width="80dp"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:contentDescription="@string/folder"
-                app:srcCompat="@drawable/ic_baseline_folder_24" />
+                app:srcCompat="@drawable/ic_baseline_folder_24"
+                android:layout_marginStart="10dp"
+                />
 
             <TextView
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="12dp"
                 android:id="@+id/txt_videoTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@+id/img_folder"
                 android:singleLine="true"
                 android:textColor="@color/txcolor"
-                android:textSize="20sp" />
+                android:layout_marginStart="5dp"
+
+                />
 
             <TextView
                 android:id="@+id/txt_videoCount"
@@ -42,8 +46,10 @@
                 android:layout_height="40dp"
                 android:layout_below="@id/txt_videoTitle"
                 android:layout_toEndOf="@id/img_folder"
-                android:textColor="@color/vdcolo"
-                android:textSize="15sp" />
+                android:textColor="@color/colorSub"
+                android:layout_marginStart="5dp"
+                android:textSize="12sp"
+                />
 
         </RelativeLayout>
 

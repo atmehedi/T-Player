@@ -2,11 +2,11 @@
 <resources>
     <color name="bg">#102027</color>
     <color name="txcolor">#FFFDFC</color>
-    <color name="vdcolo">#F5655B</color>
+    <color name="colorSub">#918987</color>
     <color name="toolbar">#000000</color>
     <color name="controlsBag">#7E1C1816</color>
     <color name="lineColor">#CF0000</color>
-    <color name="folderColor">#CF0000</color>
+    <color name="folderColor">#7D8077</color>
     <color name="border">#CF0000</color>
     <color name="lineColor2">#CF0000</color>
 </resources>

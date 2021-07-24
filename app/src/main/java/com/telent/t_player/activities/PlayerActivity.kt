@@ -31,6 +31,7 @@ import com.telent.t_player.exo_content.TrackSelectionDialog
 import kotlin.math.ceil
 
 
+@Suppress("DEPRECATION")
 class PlayerActivity : AppCompatActivity(), View.OnClickListener,
         Player.Listener, View.OnTouchListener, GestureDetector.OnGestureListener,
         GestureDetector.OnDoubleTapListener{
@@ -98,9 +99,6 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var repeat: ImageView
     private lateinit var speed: TextView
 
-    private lateinit var fForward:ImageView
-    private lateinit var fRewind:ImageView
-
     private lateinit var forwardText:TextView
     private lateinit var rewindText:TextView
 
@@ -111,8 +109,6 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var prev:ImageView
 
     private var currentMedia:Int = 0
-    private var playbackDiff = 1
-    private var playbackCount = 1
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -842,13 +838,9 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
             else -> {
                 val videoName1 = cursor.getColumnIndex(MediaStore.Video.Media.DISPLAY_NAME)
                 val bucketName = cursor.getColumnIndex(MediaStore.Video.Media.BUCKET_DISPLAY_NAME)
-                val dateColumn = cursor.getColumnIndex(MediaStore.Video.Media.DATE_ADDED)
-                val dateModifiedColumn  = cursor.getColumnIndex(MediaStore.Video.Media.DATE_MODIFIED)
                 val videoId = cursor.getColumnIndex(MediaStore.Video.Media._ID)
                 do {
                     cursor.getString(videoName1)
-                    val dateAdded = cursor.getString(dateColumn)
-                    val dateModified = cursor.getString(dateModifiedColumn)
                     val videoName = cursor.getString(videoName1)
                     var bucketName1 = cursor.getString(bucketName)
                     val videoId2 = cursor.getString(videoId)

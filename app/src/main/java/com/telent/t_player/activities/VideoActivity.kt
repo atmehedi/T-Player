@@ -21,23 +21,23 @@ import com.telent.t_player.adapter.VideoRecyclerAdapter
 import com.telent.t_player.model.VideoModel
 
 class VideoActivity : AppCompatActivity() {
-    lateinit var videoRecyclerView: RecyclerView
+    private lateinit var videoRecyclerView: RecyclerView
     private var videoAr = arrayListOf<VideoModel>()
     private lateinit var arraylistTitle: ArrayList<String>
-    lateinit var videoName: List<String>
-    lateinit var arraylistId: HashMap<String, String>
-    lateinit var arrayFolderName: HashMap<String, String>
-    lateinit var arraylistVideoWidth: HashMap<String, String>
-    lateinit var arraylistduration: HashMap<String, String>
-    lateinit var coordinator: CoordinatorLayout
-    lateinit var frameLayout: FrameLayout
-    lateinit var toolbar: Toolbar
-    lateinit var fab2: FloatingActionButton
-    var folderId: String? = "folderId"
-    var bucketTitle = "Internal Storage"
-    lateinit var sharedPreferences: SharedPreferences
+    private lateinit var videoName: List<String>
+    private lateinit var arraylistId: HashMap<String, String>
+    private lateinit var arrayFolderName: HashMap<String, String>
+    private lateinit var arraylistVideoWidth: HashMap<String, String>
+    private lateinit var arraylistduration: HashMap<String, String>
+    private lateinit var coordinator: CoordinatorLayout
+    private lateinit var frameLayout: FrameLayout
+    private lateinit var toolbar: Toolbar
+    private lateinit var fab2: FloatingActionButton
+    private var folderId: String? = "folderId"
+    private var bucketTitle = "Internal Storage"
+    private lateinit var sharedPreferences: SharedPreferences
 
-    lateinit var refresher: SwipeRefreshLayout
+    private lateinit var refresher: SwipeRefreshLayout
 
     private lateinit var arrayListDate: HashMap<String, String>
     private lateinit var arrayListDateModified: HashMap<String, String>
@@ -51,19 +51,17 @@ class VideoActivity : AppCompatActivity() {
                 Context.MODE_PRIVATE
         )
         refresher = findViewById(R.id.refresher)
-        refresher.setOnRefreshListener {
-
-            startActivity(intent)
-            finish()
-            refresher.isRefreshing = false
-        }
 
         listMain()
+        refresher.setOnRefreshListener {
 
-
+            videoAr.clear()
+            listMain()
+            refresher.isRefreshing = false
+        }
     }
 
-    fun listMain() {
+    private fun listMain() {
         if (intent != null) {
             folderId = intent.getStringExtra("content_id")
             if (folderId == null) {
