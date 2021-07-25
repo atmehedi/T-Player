@@ -1,5 +1,6 @@
 package com.telent.t_player.adapter
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
@@ -13,7 +14,7 @@ import com.telent.t_player.R
 import com.telent.t_player.activities.PlayerActivity
 import com.telent.t_player.model.VideoModel
 
-class VideoRecyclerAdapter(val context: Context, private val itemList: ArrayList<VideoModel>) :
+class VideoRecyclerAdapter(private val activity: Activity, private val itemList: ArrayList<VideoModel>) :
         RecyclerView.Adapter<VideoRecyclerAdapter.ViewHolder>() {
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
@@ -33,16 +34,16 @@ class VideoRecyclerAdapter(val context: Context, private val itemList: ArrayList
         holder.itemName.text = pic.resName
         holder.itemCount.text = pic.resId
 
-        Glide.with(context).load(pic.resUri).error(R.drawable.ic_baseline_music_video_24).into(holder.itemImage)
+        Glide.with(activity).load(pic.resUri).error(R.drawable.ic_baseline_music_video_24).into(holder.itemImage)
 
         holder.cView.setOnClickListener {
-            val intent = Intent(context, PlayerActivity::class.java)
+            val intent = Intent(activity, PlayerActivity::class.java)
             intent.putExtra("videoUri", pic.resUri)
             intent.putExtra("videoName", pic.resName)
             intent.putExtra("videoWidth", pic.resWidth)
             intent.putExtra("currentFolder",pic.folderName)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            context.startActivity(intent)
+            activity.startActivity(intent)
 
         }
 

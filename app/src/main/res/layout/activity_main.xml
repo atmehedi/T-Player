@@ -24,7 +24,7 @@
                 android:layout_height="wrap_content"
                 android:background="@color/toolbar"
                 android:minHeight="?attr/actionBarSize"
-                android:theme="@style/ThemeOverlay.AppCompat.Dark"
+                android:theme="@style/ThemeOverlay.AppCompat.DayNight.ActionBar"
                 app:menu="@menu/overflow_menu"
 
                 />

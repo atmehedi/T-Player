@@ -67,6 +67,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_main)
 
 
@@ -267,9 +268,10 @@ class MainActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.settings -> {
                 startActivity(Intent(this, SettingsActivity::class.java))
+                overridePendingTransition(R.anim.zoom_in, R.anim.zoom_out)
             }
             R.id.about -> {
-                val about = Dialog(this)
+                val about = Dialog(this,R.style.PauseDialog)
                 about.requestWindowFeature(Window.FEATURE_NO_TITLE)
                 about.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
                 about.setContentView(R.layout.about_dialog)
@@ -285,7 +287,7 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.exit -> {
 
-                val dialog = Dialog(this)
+                val dialog = Dialog(this,R.style.PauseDialog)
 
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
                 dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -305,13 +307,9 @@ class MainActivity : AppCompatActivity() {
 
 
             }
-            R.id.refresh -> {
-                videoFl.clear()
-                displayVideoList()
-            }
 // sort functionality
             R.id.sort -> {
-                val dialog = Dialog(this)
+                val dialog = Dialog(this,R.style.PauseDialog)
 
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
                 dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
