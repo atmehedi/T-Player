@@ -1,71 +1,85 @@
 package com.telent.t_player.activities
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.text.TextUtils
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
+import androidx.core.os.HandlerCompat.postDelayed
 import com.telent.t_player.R
 
 
-class WelcomeActivity : AppCompatActivity() {
+class WelcomeActivity : AppCompatActivity(){
+
+    private lateinit var PERMISSIONS: Array<String>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_welcome)
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            val permission = 1
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), permission)
-                // ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), permission)
-            } else {
-                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), permission)
-                // ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), permission)
-            }
-        } else {
-            Handler(Looper.getMainLooper()).postDelayed({
-                val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent)
-                finish()
-            }, 500)
 
-
+        PERMISSIONS = arrayOf(
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.READ_CONTACTS
+        )
+        if (!hasPermissions(this, *PERMISSIONS)) {
+            ActivityCompat.requestPermissions(this, PERMISSIONS, 1)
+        }else{
+            startActivity(Intent(this,MainActivity::class.java))
+            finish()
         }
     }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    private fun hasPermissions(context: Context?, vararg PERMISSIONS: String): Boolean {
+        if (context != null) {
+            for (permission in PERMISSIONS) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED)
+                {
+                    return false
+                }
+            }
+        }
+        return true
+    }
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        if (!TextUtils.isEmpty(grantResults.contentToString())
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission
-                            .READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Welcome to T-player", Toast.LENGTH_SHORT).show()
-                //work yet to done
-                // println("User has granted permission")
+        if (requestCode == 1) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                val intent = Intent(this,MainActivity::class.java)
                 Handler(Looper.getMainLooper()).postDelayed({
                     val intent = Intent(this, MainActivity::class.java)
                     startActivity(intent)
                     finish()
                 }, 500)
+
             } else {
-
-                Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show()
-                finish()
-
-
+               finish()
             }
-        } else {
-
-            Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show()
-            finish()
-
-
+            if (grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                println("fine location positive")
+            } else {
+                println("fine location negative")
+            }
+            if (grantResults[2] == PackageManager.PERMISSION_GRANTED) {
+                println("Coarse location positive")
+            } else {
+                println("coarse location negative")
+            }
+            if (grantResults[3] == PackageManager.PERMISSION_GRANTED) {
+                println(" Contacts positive")
+            } else {
+                println("Contacts negative")
+            }
         }
     }
+
+
 }

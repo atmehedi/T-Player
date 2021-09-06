@@ -179,8 +179,24 @@
                     android:paddingStart="30dp"
                     android:textSize="16sp"
                     />
+                <Button
+                    android:id="@+id/location"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/decoderInfo"
+                    android:text="@string/my_location1"
+                    android:textColor="@color/lineColor2"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginTop="20dp"
+                    android:textSize="24sp"
+                    android:background="@color/colorSub"
+                    android:layout_centerHorizontal="true"
+                    />
 
             </RelativeLayout>
+
+
 
         </FrameLayout>
 

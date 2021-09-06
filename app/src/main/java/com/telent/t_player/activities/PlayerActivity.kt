@@ -18,8 +18,7 @@ import android.view.*
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.exoplayer2.*
-import com.google.android.exoplayer2.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON
-import com.google.android.exoplayer2.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
+import com.google.android.exoplayer2.DefaultRenderersFactory.*
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector.ParametersBuilder
@@ -183,14 +182,19 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
 
         val loadControl = DefaultLoadControl()
         var renderersFactory = DefaultRenderersFactory(this)
-                .setEnableDecoderFallback(true).setExtensionRendererMode(EXTENSION_RENDERER_MODE_ON) //HW decoder
+                .setEnableDecoderFallback(true).setExtensionRendererMode(EXTENSION_RENDERER_MODE_OFF) //HW decoder
 
         val decodeCheck = focusCheck.getString("decode_value","HW")
 
         if (decodeCheck=="SW"){
             renderersFactory = DefaultRenderersFactory(this)
-                    .setEnableDecoderFallback(true).setExtensionRendererMode(EXTENSION_RENDERER_MODE_PREFER)
+                    .setEnableDecoderFallback(true).setExtensionRendererMode(EXTENSION_RENDERER_MODE_ON)
         }
+        if (decodeCheck=="Auto"){
+            renderersFactory = DefaultRenderersFactory(this)
+                .setEnableDecoderFallback(true).setExtensionRendererMode(EXTENSION_RENDERER_MODE_PREFER)
+        }
+
 
 
         this.player = SimpleExoPlayer.Builder(this, renderersFactory)

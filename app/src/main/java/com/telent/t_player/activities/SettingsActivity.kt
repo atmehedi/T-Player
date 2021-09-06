@@ -1,6 +1,7 @@
 package com.telent.t_player.activities
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.MenuItem
@@ -8,6 +9,7 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.telent.t_player.R
@@ -21,8 +23,11 @@ class SettingsActivity : AppCompatActivity() , AdapterView.OnItemSelectedListene
    private lateinit var repeatMode:SwitchMaterial
     private lateinit var wakeMode:SwitchMaterial
 
+    private lateinit var locate:TextView
+
+
     private var speedArray = arrayOf("1x","1.25x", "1.50x", "1.75x", "2x","0.25x", "0.50x")
-    private var decoderArray = arrayOf("HW","SW")
+    private var decoderArray = arrayOf("HW","SW","Auto")
     private lateinit var speedSpin:Spinner
     private lateinit var decodeSpin:Spinner
 
@@ -31,7 +36,13 @@ class SettingsActivity : AppCompatActivity() , AdapterView.OnItemSelectedListene
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
+
         initializer()
+
+locate.setOnClickListener {
+    startActivity(Intent(this,LocateActivity::class.java))
+}
+
 
 
         sharedPreferences = getSharedPreferences(getString(R.string.shared_value_focus), Context.MODE_PRIVATE)
@@ -100,7 +111,8 @@ class SettingsActivity : AppCompatActivity() , AdapterView.OnItemSelectedListene
         speedSpin.adapter = speedAdapter
         speedSpin.setSelection(2) // default selection
 
-        val decoderAdapter: ArrayAdapter<*> = ArrayAdapter<Any?>(this, android.R.layout.simple_spinner_item, decoderArray)
+        val decoderAdapter: ArrayAdapter<*> = ArrayAdapter<Any?>(this, android.R.layout
+            .simple_spinner_item, decoderArray)
         decoderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         decodeSpin.adapter = decoderAdapter
 
@@ -122,6 +134,7 @@ class SettingsActivity : AppCompatActivity() , AdapterView.OnItemSelectedListene
         decodeSpin = findViewById(R.id.decoderSpinner)
         repeatMode = findViewById(R.id.repeat4all)
         wakeMode = findViewById(R.id.wakeMode)
+        locate = findViewById(R.id.location)
 
 
     }
@@ -153,6 +166,9 @@ class SettingsActivity : AppCompatActivity() , AdapterView.OnItemSelectedListene
                 }
                 1->{
                     sharedPreferences.edit().putString("decode_value", "SW").apply()
+                }
+                2->{
+                    sharedPreferences.edit().putString("decode_value", "Auto").apply()
                 }
             }
 
