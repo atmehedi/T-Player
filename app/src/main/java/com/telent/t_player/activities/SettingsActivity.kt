@@ -37,6 +37,7 @@ class SettingsActivity : AppCompatActivity() , AdapterView.OnItemSelectedListene
 
         sharedPreferences = getSharedPreferences(getString(R.string.shared_value_focus), Context.MODE_PRIVATE)
         focusMode.isUseMaterialThemeColors = true
+        backGroundCheck.isUseMaterialThemeColors = true
         val focusCheck = sharedPreferences.getString("checked", "Unchecked")
         if (focusCheck == "checked") {
             focusMode.isChecked = true

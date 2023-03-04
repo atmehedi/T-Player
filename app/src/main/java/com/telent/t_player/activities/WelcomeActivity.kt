@@ -22,10 +22,8 @@ class WelcomeActivity : AppCompatActivity(){
         setContentView(R.layout.activity_welcome)
 
         PERMISSIONS = arrayOf(
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.READ_CONTACTS
+            Manifest.permission.READ_EXTERNAL_STORAGE
+
         )
         if (!hasPermissions(this, *PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, 1)
@@ -63,21 +61,7 @@ class WelcomeActivity : AppCompatActivity(){
             } else {
                finish()
             }
-            if (grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                println("fine location positive")
-            } else {
-                println("fine location negative")
-            }
-            if (grantResults[2] == PackageManager.PERMISSION_GRANTED) {
-                println("Coarse location positive")
-            } else {
-                println("coarse location negative")
-            }
-            if (grantResults[3] == PackageManager.PERMISSION_GRANTED) {
-                println(" Contacts positive")
-            } else {
-                println("Contacts negative")
-            }
+
         }
     }
 

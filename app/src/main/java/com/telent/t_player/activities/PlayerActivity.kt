@@ -154,6 +154,8 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
         this.focusCheck = this.getSharedPreferences(this.getString(R.string.shared_value_focus), Context.MODE_PRIVATE)
         backGroundCheck = getSharedPreferences(getString(R.string.backCheck),Context.MODE_PRIVATE)
 
+
+
         //fullscreen codes
         this.window.setFlags(
                 WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager
@@ -373,8 +375,10 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
 
         //backGround check
 
-        val backG = backGroundCheck.getString("backG_status","backG_true")
+        val backG = focusCheck.getString("backG_status","backG_true")
         backFlag = backG=="backG_true"
+        println("background value = $backG")
+
 
 
 
@@ -464,7 +468,6 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
         super.onPause()
         println(backFlag)
         if (!backFlag){
-
             this.player.pause()
         }
 
