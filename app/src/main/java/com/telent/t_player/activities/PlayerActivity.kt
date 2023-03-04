@@ -43,6 +43,7 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
     private var vidWidth: String? = "null"
     private var position: String? = "null"
     private var currentFolder:String?= "null"
+    private var backFlag = false
 
 
     private var prevBrightness: String? = "0.01f"
@@ -57,6 +58,7 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var trackSelect: ImageView
     private lateinit var focusCheck: SharedPreferences
     private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var backGroundCheck:SharedPreferences
 
     private lateinit var upData: SharedPreferences
 
@@ -110,7 +112,7 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
     private var currentMedia:Int = 0
 
 
-    @SuppressLint("ClickableViewAccessibility")
+    @SuppressLint("ClickableViewAccessibility", "SuspiciousIndentation")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         this.setContentView(R.layout.activity_player)
@@ -150,6 +152,7 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
 
         this.sharedPreferences = this.getSharedPreferences(this.getString(R.string.shared_value_file), Context.MODE_PRIVATE)
         this.focusCheck = this.getSharedPreferences(this.getString(R.string.shared_value_focus), Context.MODE_PRIVATE)
+        backGroundCheck = getSharedPreferences(getString(R.string.backCheck),Context.MODE_PRIVATE)
 
         //fullscreen codes
         this.window.setFlags(
@@ -368,6 +371,13 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
             this.vidName = fileName
         }
 
+        //backGround check
+
+        val backG = backGroundCheck.getString("backG_status","backG_true")
+        backFlag = backG=="backG_true"
+
+
+
         //default playback speed set
         val speedSet = focusCheck.getString("speed_value","1")
 
@@ -452,7 +462,11 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
 
     override fun onPause() {                             //O V E R R I D E F U N C T I O N    C H E C K P O I N T
         super.onPause()
-        this.player.pause()
+        println(backFlag)
+        if (!backFlag){
+
+            this.player.pause()
+        }
 
 
     }

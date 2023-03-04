@@ -113,6 +113,7 @@
                     android:layout_marginEnd="10dp"
                     android:padding="6dp"
                     android:background="@drawable/custom_border"
+                    android:contentDescription="@string/spinner"
                     />
                 <TextView
                     android:id="@+id/speedInfo"
@@ -167,6 +168,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_marginEnd="10dp"
                     android:padding="6dp"
+                    android:contentDescription="@string/spinner"
                     android:background="@drawable/custom_border"
                     />
                 <TextView
@@ -179,20 +181,29 @@
                     android:paddingStart="30dp"
                     android:textSize="16sp"
                     />
-                <Button
-                    android:id="@+id/location"
-                    android:layout_width="wrap_content"
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/Background"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/decoderInfo"
-                    android:text="@string/my_location1"
-                    android:textColor="@color/lineColor2"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
-                    android:layout_marginTop="20dp"
+                    android:text="@string/play_on_background"
+                    android:textColor="@color/txcolor"
                     android:textSize="24sp"
-                    android:background="@color/colorSub"
-                    android:layout_centerHorizontal="true"
+                    android:layout_below="@id/decoderInfo"
+                    android:layout_marginTop="12dp"
                     />
+                <TextView
+                    android:id="@+id/BackInfo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/Background"
+                    android:text="@string/play_music_on_backgound"
+                    android:paddingEnd="30dp"
+                    android:paddingStart="30dp"
+                    android:textSize="16sp"
+                    />
+
 
             </RelativeLayout>
 

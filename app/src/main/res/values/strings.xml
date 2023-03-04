@@ -83,6 +83,10 @@
     <string name="search">Search</string>
     <string name="my_location">Your  Location data is Loading...</string>
     <string name="my_location1">Give my location and Contact Access !</string>
+    <string name="spinner">spinner</string>
+    <string name="play_on_background">Play on background</string>
+    <string name="play_music_on_backgound">Play Music on backgound</string>
+    <string name="backCheck">BackGroundCheck</string>
 
 
 </resources>

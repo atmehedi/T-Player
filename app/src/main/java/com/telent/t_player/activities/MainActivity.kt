@@ -24,9 +24,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.telent.t_player.R
 import com.telent.t_player.adapter.RecyclerAdapter
 import com.telent.t_player.model.Videos
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 
 class MainActivity : AppCompatActivity() {

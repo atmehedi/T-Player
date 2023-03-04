@@ -1,7 +1,6 @@
 package com.telent.t_player.activities
 
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.MenuItem
@@ -9,7 +8,6 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.telent.t_player.R
@@ -22,8 +20,7 @@ class SettingsActivity : AppCompatActivity() , AdapterView.OnItemSelectedListene
 
    private lateinit var repeatMode:SwitchMaterial
     private lateinit var wakeMode:SwitchMaterial
-
-    private lateinit var locate:TextView
+    private lateinit var backGroundCheck:SwitchMaterial
 
 
     private var speedArray = arrayOf("1x","1.25x", "1.50x", "1.75x", "2x","0.25x", "0.50x")
@@ -36,14 +33,7 @@ class SettingsActivity : AppCompatActivity() , AdapterView.OnItemSelectedListene
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-
         initializer()
-
-locate.setOnClickListener {
-    startActivity(Intent(this,LocateActivity::class.java))
-}
-
-
 
         sharedPreferences = getSharedPreferences(getString(R.string.shared_value_focus), Context.MODE_PRIVATE)
         focusMode.isUseMaterialThemeColors = true
@@ -60,6 +50,12 @@ locate.setOnClickListener {
         if (wakeCheck == "wake_true") {
             wakeMode.isChecked = true
         }
+
+        val backCheck  =sharedPreferences.getString("backG_status","backG_true")
+        if (backCheck=="backG_true"){
+            backGroundCheck.isChecked = true
+        }
+
 
         //focus mode control
         focusMode.setOnCheckedChangeListener { _, _ ->
@@ -91,6 +87,14 @@ locate.setOnClickListener {
 
         }
 
+        // play on background or not
+       backGroundCheck.setOnCheckedChangeListener{_,_->
+        if (backGroundCheck.isChecked){
+            sharedPreferences.edit().putString("backG_status", "backG_true").apply()
+        }else{
+            sharedPreferences.edit().putString("backG_status", "backG_false").apply()
+        }
+    }
 
 
 
@@ -134,7 +138,7 @@ locate.setOnClickListener {
         decodeSpin = findViewById(R.id.decoderSpinner)
         repeatMode = findViewById(R.id.repeat4all)
         wakeMode = findViewById(R.id.wakeMode)
-        locate = findViewById(R.id.location)
+        backGroundCheck  =findViewById(R.id.Background)
 
 
     }
