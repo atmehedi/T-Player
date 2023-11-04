@@ -24,7 +24,6 @@ import com.google.android.exoplayer2.ui.TrackSelectionView.TrackSelectionListene
 import com.google.android.exoplayer2.util.Assertions
 import com.google.android.material.tabs.TabLayout
 import com.telent.t_player.R
-import java.util.*
 
 
 /** Dialog to select tracks.  */
@@ -35,13 +34,14 @@ class TrackSelectionDialog : DialogFragment() {
     private var onClickListener: DialogInterface.OnClickListener? = null
     private var onDismissListener: DialogInterface.OnDismissListener? = null
     private fun init(
-            titleId: Int,
-            mappedTrackInfo: MappedTrackInfo,
-            initialParameters: DefaultTrackSelector.Parameters,
-            allowAdaptiveSelections: Boolean,
-            allowMultipleOverrides: Boolean,
-            onClickListener: DialogInterface.OnClickListener,
-            onDismissListener: DialogInterface.OnDismissListener) {
+        titleId: Int,
+        mappedTrackInfo: MappedTrackInfo,
+        initialParameters: DefaultTrackSelector.Parameters,
+        allowAdaptiveSelections: Boolean,
+        allowMultipleOverrides: Boolean,
+        onClickListener: DialogInterface.OnClickListener,
+        onDismissListener: DialogInterface.OnDismissListener
+    ) {
         this.titleId = titleId
         this.onClickListener = onClickListener
         this.onDismissListener = onDismissListener
@@ -51,12 +51,13 @@ class TrackSelectionDialog : DialogFragment() {
                 val trackGroupArray = mappedTrackInfo.getTrackGroups(i)
                 val tabFragment = TrackSelectionViewFragment()
                 tabFragment.init(
-                        mappedTrackInfo,  /* rendererIndex= */
-                        i,
-                        initialParameters.getRendererDisabled( /* rendererIndex= */i),
-                        initialParameters.getSelectionOverride( /* rendererIndex= */i, trackGroupArray),
-                        allowAdaptiveSelections,
-                        allowMultipleOverrides)
+                    mappedTrackInfo,  /* rendererIndex= */
+                    i,
+                    initialParameters.getRendererDisabled( /* rendererIndex= */i),
+                    initialParameters.getSelectionOverride( /* rendererIndex= */i, trackGroupArray),
+                    allowAdaptiveSelections,
+                    allowMultipleOverrides
+                )
                 tabFragments.put(i, tabFragment)
                 tabTrackTypes.add(trackType)
             }
@@ -101,11 +102,13 @@ class TrackSelectionDialog : DialogFragment() {
     }
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
         val dialogView: View = inflater.inflate(R.layout.track_selection_dialog, container, false)
         val tabLayout: TabLayout = dialogView.findViewById(R.id.track_selection_dialog_tab_layout)
         val viewPager: ViewPager = dialogView.findViewById(R.id.track_selection_dialog_view_pager)
-        val cancelButton = dialogView.findViewById<Button>(R.id.track_selection_dialog_cancel_button)
+        val cancelButton =
+            dialogView.findViewById<Button>(R.id.track_selection_dialog_cancel_button)
         val okButton = dialogView.findViewById<Button>(R.id.track_selection_dialog_ok_button)
         viewPager.adapter = FragmentAdapter(childFragmentManager)
         tabLayout.setupWithViewPager(viewPager)
@@ -118,7 +121,8 @@ class TrackSelectionDialog : DialogFragment() {
         return dialogView
     }
 
-    private inner class FragmentAdapter(fragmentManager: FragmentManager?) : FragmentPagerAdapter(fragmentManager!!, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+    private inner class FragmentAdapter(fragmentManager: FragmentManager?) :
+        FragmentPagerAdapter(fragmentManager!!, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
         override fun getItem(position: Int): Fragment {
             return tabFragments.valueAt(position)
         }
@@ -145,12 +149,13 @@ class TrackSelectionDialog : DialogFragment() {
         /* package */
         var overrides: List<SelectionOverride>? = null
         fun init(
-                mappedTrackInfo: MappedTrackInfo?,
-                rendererIndex: Int,
-                initialIsDisabled: Boolean,
-                initialOverride: SelectionOverride?,
-                allowAdaptiveSelections: Boolean,
-                allowMultipleOverrides: Boolean) {
+            mappedTrackInfo: MappedTrackInfo?,
+            rendererIndex: Int,
+            initialIsDisabled: Boolean,
+            initialOverride: SelectionOverride?,
+            allowAdaptiveSelections: Boolean,
+            allowMultipleOverrides: Boolean
+        ) {
             this.mappedTrackInfo = mappedTrackInfo
             this.rendererIndex = rendererIndex
             isDisabled = initialIsDisabled
@@ -160,27 +165,32 @@ class TrackSelectionDialog : DialogFragment() {
         }
 
         override fun onCreateView(
-                inflater: LayoutInflater,
-                container: ViewGroup?,
-                savedInstanceState: Bundle?): View? {
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
+        ): View? {
             val rootView = inflater.inflate(
-                    R.layout.exo_track_selection_dialog, container,  /* attachToRoot= */false)
-            val trackSelectionView: TrackSelectionView = rootView.findViewById(R.id.exo_track_selection_view)
+                R.layout.exo_track_selection_dialog, container,  /* attachToRoot= */false
+            )
+            val trackSelectionView: TrackSelectionView =
+                rootView.findViewById(R.id.exo_track_selection_view)
             trackSelectionView.setShowDisableOption(true)
             trackSelectionView.setAllowMultipleOverrides(allowMultipleOverrides)
             trackSelectionView.setAllowAdaptiveSelections(allowAdaptiveSelections)
             trackSelectionView.init(
-                    mappedTrackInfo!!,
-                    rendererIndex,
-                    isDisabled,
-                    overrides!!,  /* trackFormatComparator= */
-                    null,  /* listener= */
-                    this)
+                mappedTrackInfo!!,
+                rendererIndex,
+                isDisabled,
+                overrides!!,  /* trackFormatComparator= */
+                null,  /* listener= */
+                this
+            )
             return rootView
         }
 
         override fun onTrackSelectionChanged(
-                isDisabled: Boolean, overrides: List<SelectionOverride>) {
+            isDisabled: Boolean, overrides: List<SelectionOverride>
+        ) {
             this.isDisabled = isDisabled
             this.overrides = overrides
         }
@@ -223,39 +233,47 @@ class TrackSelectionDialog : DialogFragment() {
          * dismissed.
          */
         fun createForTrackSelector(
-                trackSelector: DefaultTrackSelector, onDismissListener: DialogInterface.OnDismissListener): TrackSelectionDialog {
+            trackSelector: DefaultTrackSelector,
+            onDismissListener: DialogInterface.OnDismissListener
+        ): TrackSelectionDialog {
             val mappedTrackInfo = Assertions.checkNotNull(trackSelector.currentMappedTrackInfo)
             val trackSelectionDialog = TrackSelectionDialog()
             val parameters = trackSelector.parameters
             trackSelectionDialog.init( /* titleId= */
-                    R.string.track_selection_title,
-                    mappedTrackInfo,  /* initialParameters = */
-                    parameters,  /* allowAdaptiveSelections= */
-                    true,  /* allowMultipleOverrides= */
-                    false,  /* onClickListener= */
-                    { dialog: DialogInterface?, which: Int ->
-                        val builder = parameters.buildUpon()
-                        for (i in 0 until mappedTrackInfo.rendererCount) {
-                            builder
-                                    .clearSelectionOverrides( /* rendererIndex= */i)
-                                    .setRendererDisabled( /* rendererIndex= */
-                                            i,
-                                            trackSelectionDialog.getIsDisabled( /* rendererIndex= */i))
-                            val overrides = trackSelectionDialog.getOverrides( /* rendererIndex= */i)
-                            if (overrides.isNotEmpty()) {
-                                builder.setSelectionOverride( /* rendererIndex= */
-                                        i,
-                                        mappedTrackInfo.getTrackGroups( /* rendererIndex= */i),
-                                        overrides[0])
-                            }
+                R.string.track_selection_title,
+                mappedTrackInfo,  /* initialParameters = */
+                parameters,  /* allowAdaptiveSelections= */
+                true,  /* allowMultipleOverrides= */
+                false,  /* onClickListener= */
+                { dialog: DialogInterface?, which: Int ->
+                    val builder = parameters.buildUpon()
+                    for (i in 0 until mappedTrackInfo.rendererCount) {
+                        builder
+                            .clearSelectionOverrides( /* rendererIndex= */i)
+                            .setRendererDisabled( /* rendererIndex= */
+                                i,
+                                trackSelectionDialog.getIsDisabled( /* rendererIndex= */i)
+                            )
+                        val overrides = trackSelectionDialog.getOverrides( /* rendererIndex= */i)
+                        if (overrides.isNotEmpty()) {
+                            builder.setSelectionOverride( /* rendererIndex= */
+                                i,
+                                mappedTrackInfo.getTrackGroups( /* rendererIndex= */i),
+                                overrides[0]
+                            )
                         }
-                        trackSelector.setParameters(builder)
-                    },
-                    onDismissListener)
+                    }
+                    trackSelector.setParameters(builder)
+                },
+                onDismissListener
+            )
             return trackSelectionDialog
         }
 
-        private fun showTabForRenderer(mappedTrackInfo: MappedTrackInfo, rendererIndex: Int): Boolean {
+        private fun showTabForRenderer(
+            mappedTrackInfo: MappedTrackInfo,
+            rendererIndex: Int
+        ): Boolean {
             val trackGroupArray = mappedTrackInfo.getTrackGroups(rendererIndex)
             if (trackGroupArray.length == 0) {
                 return false

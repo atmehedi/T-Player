@@ -13,20 +13,20 @@ import com.google.android.material.switchmaterial.SwitchMaterial
 import com.telent.t_player.R
 
 
-class SettingsActivity : AppCompatActivity() , AdapterView.OnItemSelectedListener{
-   private lateinit var settingToolbar: androidx.appcompat.widget.Toolbar
-   private lateinit var focusMode: SwitchMaterial
-   private lateinit var sharedPreferences: SharedPreferences
+class SettingsActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
+    private lateinit var settingToolbar: androidx.appcompat.widget.Toolbar
+    private lateinit var focusMode: SwitchMaterial
+    private lateinit var sharedPreferences: SharedPreferences
 
-   private lateinit var repeatMode:SwitchMaterial
-    private lateinit var wakeMode:SwitchMaterial
-    private lateinit var backGroundCheck:SwitchMaterial
+    private lateinit var repeatMode: SwitchMaterial
+    private lateinit var wakeMode: SwitchMaterial
+    private lateinit var backGroundCheck: SwitchMaterial
 
 
-    private var speedArray = arrayOf("1x","1.25x", "1.50x", "1.75x", "2x","0.25x", "0.50x")
-    private var decoderArray = arrayOf("HW","SW","Auto")
-    private lateinit var speedSpin:Spinner
-    private lateinit var decodeSpin:Spinner
+    private var speedArray = arrayOf("1x", "1.25x", "1.50x", "1.75x", "2x", "0.25x", "0.50x")
+    private var decoderArray = arrayOf("HW", "SW", "Auto")
+    private lateinit var speedSpin: Spinner
+    private lateinit var decodeSpin: Spinner
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,7 +35,8 @@ class SettingsActivity : AppCompatActivity() , AdapterView.OnItemSelectedListene
 
         initializer()
 
-        sharedPreferences = getSharedPreferences(getString(R.string.shared_value_focus), Context.MODE_PRIVATE)
+        sharedPreferences =
+            getSharedPreferences(getString(R.string.shared_value_focus), Context.MODE_PRIVATE)
         focusMode.isUseMaterialThemeColors = true
         backGroundCheck.isUseMaterialThemeColors = true
         val focusCheck = sharedPreferences.getString("checked", "Unchecked")
@@ -52,8 +53,8 @@ class SettingsActivity : AppCompatActivity() , AdapterView.OnItemSelectedListene
             wakeMode.isChecked = true
         }
 
-        val backCheck  =sharedPreferences.getString("backG_status","backG_true")
-        if (backCheck=="backG_true"){
+        val backCheck = sharedPreferences.getString("backG_status", "backG_true")
+        if (backCheck == "backG_true") {
             backGroundCheck.isChecked = true
         }
 
@@ -89,13 +90,13 @@ class SettingsActivity : AppCompatActivity() , AdapterView.OnItemSelectedListene
         }
 
         // play on background or not
-       backGroundCheck.setOnCheckedChangeListener{_,_->
-        if (backGroundCheck.isChecked){
-            sharedPreferences.edit().putString("backG_status", "backG_true").apply()
-        }else{
-            sharedPreferences.edit().putString("backG_status", "backG_false").apply()
+        backGroundCheck.setOnCheckedChangeListener { _, _ ->
+            if (backGroundCheck.isChecked) {
+                sharedPreferences.edit().putString("backG_status", "backG_true").apply()
+            } else {
+                sharedPreferences.edit().putString("backG_status", "backG_false").apply()
+            }
         }
-    }
 
 
 
@@ -107,27 +108,30 @@ class SettingsActivity : AppCompatActivity() , AdapterView.OnItemSelectedListene
         decodeSpin.onItemSelectedListener = this
 
 
-
-
-
-
-        val speedAdapter: ArrayAdapter<*> = ArrayAdapter<Any?>(this, android.R.layout.simple_spinner_item, speedArray)
+        val speedAdapter: ArrayAdapter<*> =
+            ArrayAdapter<Any?>(this, android.R.layout.simple_spinner_item, speedArray)
         speedAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         speedSpin.adapter = speedAdapter
         speedSpin.setSelection(2) // default selection
 
-        val decoderAdapter: ArrayAdapter<*> = ArrayAdapter<Any?>(this, android.R.layout
-            .simple_spinner_item, decoderArray)
+        val decoderAdapter: ArrayAdapter<*> = ArrayAdapter<Any?>(
+            this, android.R.layout
+                .simple_spinner_item, decoderArray
+        )
         decoderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         decodeSpin.adapter = decoderAdapter
 
-       
-        decodeSpin.setSelection(decoderArray
-                .indexOf(sharedPreferences.getString("decode_value","HW")))// default decoder selection
+
+        decodeSpin.setSelection(
+            decoderArray
+                .indexOf(sharedPreferences.getString("decode_value", "HW"))
+        )// default decoder selection
 
 
-        speedSpin.setSelection(speedArray
-                .indexOf(sharedPreferences.getString("speed_value","1x")+"x"))// default speed selection
+        speedSpin.setSelection(
+            speedArray
+                .indexOf(sharedPreferences.getString("speed_value", "1x") + "x")
+        )// default speed selection
 
 
     }
@@ -139,7 +143,7 @@ class SettingsActivity : AppCompatActivity() , AdapterView.OnItemSelectedListene
         decodeSpin = findViewById(R.id.decoderSpinner)
         repeatMode = findViewById(R.id.repeat4all)
         wakeMode = findViewById(R.id.wakeMode)
-        backGroundCheck  =findViewById(R.id.Background)
+        backGroundCheck = findViewById(R.id.Background)
 
 
     }
@@ -163,44 +167,52 @@ class SettingsActivity : AppCompatActivity() , AdapterView.OnItemSelectedListene
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         //perform operation with selected value
-        if (parent!!.id==R.id.decoderSpinner){
-            when(position){
-                0->{
+        if (parent!!.id == R.id.decoderSpinner) {
+            when (position) {
+                0 -> {
                     sharedPreferences.edit().putString("decode_value", "HW").apply()
 
                 }
-                1->{
+
+                1 -> {
                     sharedPreferences.edit().putString("decode_value", "SW").apply()
                 }
-                2->{
+
+                2 -> {
                     sharedPreferences.edit().putString("decode_value", "Auto").apply()
                 }
             }
 
-        }
-        else if(parent.id==R.id.speedSpinner){
+        } else if (parent.id == R.id.speedSpinner) {
             when (position) {
                 0 -> {
                     sharedPreferences.edit().putString("speed_value", "1").apply()
                 }
+
                 1 -> {
                     sharedPreferences.edit().putString("speed_value", "1.25").apply()
                 }
+
                 2 -> {
                     sharedPreferences.edit().putString("speed_value", "1.50").apply()
                 }
+
                 3 -> {
                     sharedPreferences.edit().putString("speed_value", "1.75").apply()
                 }
+
                 4 -> {
-                    sharedPreferences.edit().putString("speed_value","2").apply()
+                    sharedPreferences.edit().putString("speed_value", "2").apply()
                 }
+
                 5 -> {
                     sharedPreferences.edit().putString("speed_value", "0.25").apply()
                 }
+
                 6 -> {
                     sharedPreferences.edit().putString("speed_value", "0.50").apply()
                 }
+
                 else -> {
                     println("spinner error")
                 }

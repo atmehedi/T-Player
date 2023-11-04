@@ -12,8 +12,16 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
-import android.view.*
-import android.widget.*
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.Window
+import android.widget.FrameLayout
+import android.widget.RadioButton
+import android.widget.RadioGroup
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -32,7 +40,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var arrayListDate: HashMap<String, String>
     private lateinit var arrayListDateModified: HashMap<String, String>
     private lateinit var arraylistId: HashMap<String, String>
-    private lateinit var arraylistfid: HashMap<String, String>
+    private lateinit var arraylistFid: HashMap<String, String>
     private lateinit var folderName: List<String>
     private var videoFl = arrayListOf<Videos>()
     private var doubleBackToExitPressedOnce = false
@@ -51,15 +59,14 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var vidObject: Videos
 
-    private lateinit var radioGroup:RadioGroup
-    private lateinit var radioGroup2:RadioGroup
-    private lateinit var radioDate:RadioButton
-    private lateinit var radioname:RadioButton
-    private lateinit var radioModified:RadioButton
+    private lateinit var radioGroup: RadioGroup
+    private lateinit var radioGroup2: RadioGroup
+    private lateinit var radioDate: RadioButton
+    private lateinit var radioName: RadioButton
+    private lateinit var radioModified: RadioButton
 
-    private lateinit var radioAsc:RadioButton
-    private lateinit var radioDesc:RadioButton
-
+    private lateinit var radioAsc: RadioButton
+    private lateinit var radioDesc: RadioButton
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,7 +78,8 @@ class MainActivity : AppCompatActivity() {
 
 
         sharedPreferences = getSharedPreferences(
-                getString(R.string.shared_value_file), Context.MODE_PRIVATE)
+            getString(R.string.shared_value_file), Context.MODE_PRIVATE
+        )
 
 
 
@@ -111,7 +119,7 @@ class MainActivity : AppCompatActivity() {
         arrayListDate = HashMap()
         arrayListDateModified = HashMap()
         arraylistId = HashMap()
-        arraylistfid = HashMap()
+        arraylistFid = HashMap()
 
         folderName = listOf()
 
@@ -127,8 +135,7 @@ class MainActivity : AppCompatActivity() {
 
 
         setUpToolbar()
-         // folderName = folderName.sortedBy { it }
-
+        // folderName = folderName.sortedBy { it }
 
 
         for (i in folderName) {
@@ -140,7 +147,13 @@ class MainActivity : AppCompatActivity() {
             }
 
 
-            vidObject = Videos(i, "$count videos", arraylistId[i], arrayListDate[i], arrayListDateModified[i])
+            vidObject = Videos(
+                i,
+                "$count videos",
+                arraylistId[i],
+                arrayListDate[i],
+                arrayListDateModified[i]
+            )
             videoFl.add(vidObject)
 
 
@@ -153,26 +166,29 @@ class MainActivity : AppCompatActivity() {
 
     private fun sortingFunction() {     //APPLYING SORT SELECTION
 
-      val sortValue =  sharedPreferences.getString("sortValue","byName")
-        val sortType = sharedPreferences.getString("sortType","byName")
+        val sortValue = sharedPreferences.getString("sortValue", "byName")
+        val sortType = sharedPreferences.getString("sortType", "byName")
 
         when (sortValue) {
             "Sort By date" -> {
                 videoFl.sortWith(compareBy { it.dateAdded })
             }
+
             "Sort By Last modified" -> {
-                videoFl.sortWith(compareBy {it.dateModified})
+                videoFl.sortWith(compareBy { it.dateModified })
             }
+
             "Sort By name" -> {
                 videoFl.sortWith(compareBy { it.vidTitle })
             }
+
             else -> {
                 videoFl.sortWith(compareBy { it.vidTitle })
             }
         }
-            if (sortType =="Descending"){
+        if (sortType == "Descending") {
             videoFl.reverse()
-                }
+        }
 
     }
 
@@ -198,7 +214,7 @@ class MainActivity : AppCompatActivity() {
 
         val resolver: ContentResolver = contentResolver
         val uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-       val orderBy = MediaStore.Video.Media.DEFAULT_SORT_ORDER
+        val orderBy = MediaStore.Video.Media.DEFAULT_SORT_ORDER
 
         val cursor: Cursor? = resolver.query(uri, null, null, null, orderBy)
 
@@ -207,16 +223,19 @@ class MainActivity : AppCompatActivity() {
                 // query failed, handle error.
                 println("cursor error")
             }
+
             !cursor.moveToFirst() -> {
                 // no media on the device
                 println("no media on device")
             }
+
             else -> {
                 val videoName = cursor.getColumnIndex(MediaStore.Video.Media.DISPLAY_NAME)
-                val titleColumn: Int = cursor.getColumnIndex(MediaStore.Video.Media.BUCKET_DISPLAY_NAME)
+                val titleColumn: Int =
+                    cursor.getColumnIndex(MediaStore.Video.Media.BUCKET_DISPLAY_NAME)
                 val idColumn: Int = cursor.getColumnIndex(MediaStore.Video.Media.BUCKET_ID)
                 val dateColumn = cursor.getColumnIndex(MediaStore.Video.Media.DATE_ADDED)
-                val dateModifiedColumn  = cursor.getColumnIndex(MediaStore.Video.Media.DATE_MODIFIED)
+                val dateModifiedColumn = cursor.getColumnIndex(MediaStore.Video.Media.DATE_MODIFIED)
                 do {
                     cursor.getString(videoName)
                     val thisId = cursor.getLong(idColumn)
@@ -267,8 +286,9 @@ class MainActivity : AppCompatActivity() {
                 startActivity(Intent(this, SettingsActivity::class.java))
                 overridePendingTransition(R.anim.zoom_in, R.anim.zoom_out)
             }
+
             R.id.about -> {
-                val about = Dialog(this,R.style.PauseDialog)
+                val about = Dialog(this, R.style.PauseDialog)
                 about.requestWindowFeature(Window.FEATURE_NO_TITLE)
                 about.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
                 about.setContentView(R.layout.about_dialog)
@@ -282,9 +302,10 @@ class MainActivity : AppCompatActivity() {
 
 
             }
+
             R.id.exit -> {
 
-                val dialog = Dialog(this,R.style.PauseDialog)
+                val dialog = Dialog(this, R.style.PauseDialog)
 
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
                 dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -306,7 +327,7 @@ class MainActivity : AppCompatActivity() {
             }
 // sort functionality
             R.id.sort -> {
-                val dialog = Dialog(this,R.style.PauseDialog)
+                val dialog = Dialog(this, R.style.PauseDialog)
 
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
                 dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -320,12 +341,12 @@ class MainActivity : AppCompatActivity() {
                 radioAsc = dialog.findViewById(R.id.asc)
 
                 radioModified = dialog.findViewById(R.id.modified)
-                radioname = dialog.findViewById(R.id.nameBy)
+                radioName = dialog.findViewById(R.id.nameBy)
                 radioDate = dialog.findViewById(R.id.date1)
 
                 defaultRadioCheck()
 
-                  radioGroup.setOnCheckedChangeListener { group, checkedId ->
+                radioGroup.setOnCheckedChangeListener { group, checkedId ->
 
                     group.findViewById<View>(checkedId) as RadioButton
                 }
@@ -337,25 +358,29 @@ class MainActivity : AppCompatActivity() {
                     val selectedId = radioGroup.checkedRadioButtonId
                     val selectedId2 = radioGroup2.checkedRadioButtonId
                     if (selectedId == -1) {
-                       println("no option selected")
+                        println("no option selected")
                     } else {
                         val radioButton = radioGroup
-                                .findViewById<View>(selectedId) as RadioButton
+                            .findViewById<View>(selectedId) as RadioButton
 
                         radioButton.isChecked = true
-                        sharedPreferences.edit().putString("sortValue",radioButton.text.toString()).apply()
+                        sharedPreferences.edit().putString("sortValue", radioButton.text.toString())
+                            .apply()
 
 
                     }
                     if (selectedId2 == -1) {
-                        Toast.makeText(this@MainActivity,
-                                "No option selected",
-                                Toast.LENGTH_SHORT)
-                                .show()
+                        Toast.makeText(
+                            this@MainActivity,
+                            "No option selected",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
                     } else {
                         val radioButton2 = radioGroup2
-                                .findViewById<View>(selectedId2) as RadioButton
-                        sharedPreferences.edit().putString("sortType",radioButton2.text.toString()).apply()
+                            .findViewById<View>(selectedId2) as RadioButton
+                        sharedPreferences.edit().putString("sortType", radioButton2.text.toString())
+                            .apply()
 
                     }
                     startActivity(intent)
@@ -375,26 +400,29 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun defaultRadioCheck() {
-        val sortValue =  sharedPreferences.getString("sortValue","byName")
-        val sortType = sharedPreferences.getString("sortType","byName")
+        val sortValue = sharedPreferences.getString("sortValue", "byName")
+        val sortType = sharedPreferences.getString("sortType", "byName")
 
         when (sortValue) {
             "Sort By date" -> {
                 radioGroup.check(radioDate.id)
             }
+
             "Sort By Last modified" -> {
                 radioGroup.check(radioModified.id)
             }
+
             "Sort By name" -> {
-                radioGroup.check(radioname.id)
+                radioGroup.check(radioName.id)
             }
+
             else -> {
-                radioGroup.check(radioname.id)
+                radioGroup.check(radioName.id)
             }
         }
-        if (sortType =="Descending"){
+        if (sortType == "Descending") {
             radioGroup2.check(radioDesc.id)
-        }else{
+        } else {
             radioGroup2.check(radioAsc.id)
         }
     }

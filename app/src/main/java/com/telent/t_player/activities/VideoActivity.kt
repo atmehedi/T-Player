@@ -28,7 +28,7 @@ class VideoActivity : AppCompatActivity() {
     private lateinit var arraylistId: HashMap<String, String>
     private lateinit var arrayFolderName: HashMap<String, String>
     private lateinit var arraylistVideoWidth: HashMap<String, String>
-    private lateinit var arraylistduration: HashMap<String, String>
+    private lateinit var arraylistDuration: HashMap<String, String>
     private lateinit var coordinator: CoordinatorLayout
     private lateinit var frameLayout: FrameLayout
     private lateinit var toolbar: Toolbar
@@ -47,8 +47,8 @@ class VideoActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_video)
         sharedPreferences = getSharedPreferences(
-                getString(R.string.shared_value_file),
-                Context.MODE_PRIVATE
+            getString(R.string.shared_value_file),
+            Context.MODE_PRIVATE
         )
         refresher = findViewById(R.id.refresher)
 
@@ -73,7 +73,7 @@ class VideoActivity : AppCompatActivity() {
         initializer()
 
         for (i in videoName) {
-            val ttt: Int? = arraylistduration[i]?.toInt()
+            val ttt: Int? = arraylistDuration[i]?.toInt()
             val mm: Int = (ttt?.div(60000) ?: 10) % 60000
             val ss: Int = (ttt?.rem(60000) ?: 10) / 1000
 
@@ -83,7 +83,15 @@ class VideoActivity : AppCompatActivity() {
             val uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI.toString() + "/" + arraylistId[i]
             val videoWidth = arraylistVideoWidth[i]
 
-            val vidObject = VideoModel(i, runTime, uri, videoWidth,arrayListDate[i], arrayListDateModified[i],arrayFolderName[i])
+            val vidObject = VideoModel(
+                i,
+                runTime,
+                uri,
+                videoWidth,
+                arrayListDate[i],
+                arrayListDateModified[i],
+                arrayFolderName[i]
+            )
             videoAr.add(vidObject)
 
             toolBarThing()
@@ -93,26 +101,30 @@ class VideoActivity : AppCompatActivity() {
         sortingFunction()
 
     }
+
     private fun sortingFunction() {     //APPLYING SORT SELECTION
 
-        val sortValue =  sharedPreferences.getString("sortValue","byName")
-        val sortType = sharedPreferences.getString("sortType","byName")
+        val sortValue = sharedPreferences.getString("sortValue", "byName")
+        val sortType = sharedPreferences.getString("sortType", "byName")
 
         when (sortValue) {
             "Sort By date" -> {
                 videoAr.sortWith(compareBy { it.dateAdded })
             }
+
             "Sort By Last modified" -> {
-                videoAr.sortWith(compareBy {it.dateModified})
+                videoAr.sortWith(compareBy { it.dateModified })
             }
+
             "Sort By name" -> {
                 videoAr.sortWith(compareBy { it.resName })
             }
+
             else -> {
                 videoAr.sortWith(compareBy { it.resName })
             }
         }
-        if (sortType =="Descending"){
+        if (sortType == "Descending") {
             videoAr.reverse()
         }
 
@@ -131,7 +143,7 @@ class VideoActivity : AppCompatActivity() {
         arraylistId = HashMap()
         arrayFolderName = HashMap()
         arraylistVideoWidth = HashMap()
-        arraylistduration = HashMap()
+        arraylistDuration = HashMap()
         videoName = ArrayList()
         arrayListDate = HashMap()
         arrayListDateModified = HashMap()
@@ -178,21 +190,23 @@ class VideoActivity : AppCompatActivity() {
                 // query failed, handle error.
                 println("cursor error")
             }
+
             !cursor.moveToFirst() -> {
                 // no media on the device
                 println("no media on device")
             }
+
             else -> {
-                val foldername = cursor.getColumnIndex(MediaStore.Video.Media.BUCKET_DISPLAY_NAME)
+                val folderName = cursor.getColumnIndex(MediaStore.Video.Media.BUCKET_DISPLAY_NAME)
                 val titleColumn: Int = cursor.getColumnIndex(MediaStore.Video.Media.DISPLAY_NAME)
                 val idColumn: Int = cursor.getColumnIndex(MediaStore.Video.Media._ID)
                 val videoWidth = cursor.getColumnIndex(MediaStore.Video.Media.WIDTH)
                 val bucketColumn: Int = cursor.getColumnIndex(MediaStore.Video.Media.BUCKET_ID)
                 val durationColumn: Int = cursor.getColumnIndex(MediaStore.Video.Media.DURATION)
                 val dateColumn = cursor.getColumnIndex(MediaStore.Video.Media.DATE_ADDED)
-                val dateModifiedColumn  = cursor.getColumnIndex(MediaStore.Video.Media.DATE_MODIFIED)
+                val dateModifiedColumn = cursor.getColumnIndex(MediaStore.Video.Media.DATE_MODIFIED)
                 do {
-                    var fName = cursor.getString(foldername)
+                    var fName = cursor.getString(folderName)
                     val thisId = cursor.getLong(idColumn)
                     val thisTitle = cursor.getString(titleColumn)
                     val bucket = cursor.getString(bucketColumn)
@@ -204,9 +218,9 @@ class VideoActivity : AppCompatActivity() {
 
                     if (bucket == folderId) {
                         if (duration != null) {
-                            arraylistduration[thisTitle] = duration
+                            arraylistDuration[thisTitle] = duration
 
-                            if (fName == null){
+                            if (fName == null) {
                                 fName = "Internal Storage"
                             }
                             arrayFolderName[thisTitle] = fName

@@ -16,9 +16,8 @@ import com.telent.t_player.model.Videos
 
 
 class RecyclerAdapter(val activity: Activity, private val itemList: ArrayList<Videos>) :
-        RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
+    RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
 
 
         val itemName: TextView = itemView.findViewById(R.id.txt_videoTitle)
@@ -56,9 +55,7 @@ class RecyclerAdapter(val activity: Activity, private val itemList: ArrayList<Vi
             activity.overridePendingTransition(R.anim.zoom_in, R.anim.zoom_out)
 
 
-
         }
-
 
 
     }

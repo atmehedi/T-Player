@@ -14,11 +14,26 @@ import android.os.CountDownTimer
 import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.util.DisplayMetrics
-import android.view.*
-import android.widget.*
+import android.view.GestureDetector
+import android.view.MotionEvent
+import android.view.View
+import android.view.WindowManager
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.RelativeLayout
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.exoplayer2.*
-import com.google.android.exoplayer2.DefaultRenderersFactory.*
+import com.google.android.exoplayer2.C
+import com.google.android.exoplayer2.DefaultLoadControl
+import com.google.android.exoplayer2.DefaultRenderersFactory
+import com.google.android.exoplayer2.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF
+import com.google.android.exoplayer2.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON
+import com.google.android.exoplayer2.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector.ParametersBuilder
@@ -30,10 +45,9 @@ import com.telent.t_player.exo_content.TrackSelectionDialog
 import kotlin.math.ceil
 
 
-@Suppress("DEPRECATION")
 class PlayerActivity : AppCompatActivity(), View.OnClickListener,
-        Player.Listener, View.OnTouchListener, GestureDetector.OnGestureListener,
-        GestureDetector.OnDoubleTapListener{
+    Player.Listener, View.OnTouchListener, GestureDetector.OnGestureListener,
+    GestureDetector.OnDoubleTapListener {
 
     private var count = 0
     private var flag = false
@@ -42,13 +56,13 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
     private var vidName: String? = "null"
     private var vidWidth: String? = "null"
     private var position: String? = "null"
-    private var currentFolder:String?= "null"
+    private var currentFolder: String? = "null"
     private var backFlag = false
 
 
     private var prevBrightness: String? = "0.01f"
 
-    private lateinit var playerview: PlayerView
+    private lateinit var playerView: PlayerView
     private lateinit var player: SimpleExoPlayer
     private lateinit var btnScale: ImageView
     private lateinit var rotate: ImageView
@@ -58,7 +72,7 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var trackSelect: ImageView
     private lateinit var focusCheck: SharedPreferences
     private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var backGroundCheck:SharedPreferences
+    private lateinit var backGroundCheck: SharedPreferences
 
     private lateinit var upData: SharedPreferences
 
@@ -66,12 +80,12 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
     private var isShowingTrackSelectionDialog = false
     private lateinit var lock: ImageView
     private lateinit var controls: RelativeLayout
-    private lateinit var brightnessBar:LinearProgressIndicator
+    private lateinit var brightnessBar: LinearProgressIndicator
     private lateinit var soundsBar: LinearProgressIndicator
     private lateinit var totalLayout: RelativeLayout
 
     private var basex = 0f
-    private var basey = 0f
+    private var baseY = 0f
     private var diffX = 0f
     private var diffY = 0f
     private var sWidth = 0
@@ -100,16 +114,16 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var repeat: ImageView
     private lateinit var speed: TextView
 
-    private lateinit var forwardText:TextView
-    private lateinit var rewindText:TextView
+    private lateinit var forwardText: TextView
+    private lateinit var rewindText: TextView
 
-    private lateinit var currentUris:ArrayList<String>
-    private lateinit var currentVideoName:ArrayList<String>
+    private lateinit var currentUris: ArrayList<String>
+    private lateinit var currentVideoName: ArrayList<String>
 
-    private lateinit var next:ImageView
-    private lateinit var prev:ImageView
+    private lateinit var next: ImageView
+    private lateinit var prev: ImageView
 
-    private var currentMedia:Int = 0
+    private var currentMedia: Int = 0
 
 
     @SuppressLint("ClickableViewAccessibility", "SuspiciousIndentation")
@@ -150,15 +164,20 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
         val fileName = nameIndex?.let { returnCursor.getString(it) }
         returnCursor?.close()
 
-        this.sharedPreferences = this.getSharedPreferences(this.getString(R.string.shared_value_file), Context.MODE_PRIVATE)
-        this.focusCheck = this.getSharedPreferences(this.getString(R.string.shared_value_focus), Context.MODE_PRIVATE)
-        backGroundCheck = getSharedPreferences(getString(R.string.backCheck),Context.MODE_PRIVATE)
-
+        this.sharedPreferences = this.getSharedPreferences(
+            this.getString(R.string.shared_value_file),
+            Context.MODE_PRIVATE
+        )
+        this.focusCheck = this.getSharedPreferences(
+            this.getString(R.string.shared_value_focus),
+            Context.MODE_PRIVATE
+        )
+        backGroundCheck = getSharedPreferences(getString(R.string.backCheck), Context.MODE_PRIVATE)
 
 
         //fullscreen codes
         this.window.setFlags(
-                WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager
+            WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager
                 .LayoutParams.FLAG_FULLSCREEN
         )
         if (this.intent != null) {
@@ -187,24 +206,26 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
 
         val loadControl = DefaultLoadControl()
         var renderersFactory = DefaultRenderersFactory(this)
-                .setEnableDecoderFallback(true).setExtensionRendererMode(EXTENSION_RENDERER_MODE_OFF) //HW decoder
+            .setEnableDecoderFallback(true)
+            .setExtensionRendererMode(EXTENSION_RENDERER_MODE_OFF) //HW decoder
 
-        val decodeCheck = focusCheck.getString("decode_value","HW")
+        val decodeCheck = focusCheck.getString("decode_value", "HW")
 
-        if (decodeCheck=="SW"){
+        if (decodeCheck == "SW") {
             renderersFactory = DefaultRenderersFactory(this)
-                    .setEnableDecoderFallback(true).setExtensionRendererMode(EXTENSION_RENDERER_MODE_ON)
+                .setEnableDecoderFallback(true).setExtensionRendererMode(EXTENSION_RENDERER_MODE_ON)
         }
-        if (decodeCheck=="Auto"){
+        if (decodeCheck == "Auto") {
             renderersFactory = DefaultRenderersFactory(this)
-                .setEnableDecoderFallback(true).setExtensionRendererMode(EXTENSION_RENDERER_MODE_PREFER)
+                .setEnableDecoderFallback(true)
+                .setExtensionRendererMode(EXTENSION_RENDERER_MODE_PREFER)
         }
 
 
 
         this.player = SimpleExoPlayer.Builder(this, renderersFactory)
-                .setTrackSelector(this.trackSelector)
-                .setLoadControl(loadControl).build()
+            .setTrackSelector(this.trackSelector)
+            .setLoadControl(loadControl).build()
 
 
         this.initializer()
@@ -212,8 +233,6 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
         nextPrevHandler()
 
         currentMedia = currentUris.indexOf(vidUri)// INDEX OF ARRAY URI S
-
-
 
 
         next.setOnClickListener(this)
@@ -250,7 +269,7 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
         this.btnScale.setOnClickListener {
             when (clickCount) {
                 0 -> {
-                    this.playerview.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
+                    this.playerView.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
                     this.centerText.visibility = View.VISIBLE
                     this.centerText.text = this.getString(R.string.zoom)
                     object : CountDownTimer(500, 1000) {
@@ -265,8 +284,9 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
 
 
                 }
+
                 1 -> {
-                    this.playerview.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT
+                    this.playerView.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT
                     this.centerText.visibility = View.VISIBLE
                     this.centerText.text = this.getString(R.string.height)
                     object : CountDownTimer(500, 1000) {
@@ -280,9 +300,10 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
                     this.btnScale.setImageResource(R.drawable.ic_baseline_height_24)
 
                 }
+
                 2 -> {
-                    this.playerview.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT
-                    this.playerview.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH
+                    this.playerView.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT
+                    this.playerView.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH
                     this.centerText.visibility = View.VISIBLE
                     this.centerText.text = this.getString(R.string.stretched)
                     object : CountDownTimer(500, 1000) {
@@ -296,8 +317,9 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
                     this.btnScale.setImageResource(R.drawable.ic_baseline_open_with_24)
 
                 }
+
                 3 -> {
-                    this.playerview.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FILL
+                    this.playerView.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FILL
                     this.centerText.visibility = View.VISIBLE
                     this.centerText.text = this.getString(R.string.fillToScreen)
                     object : CountDownTimer(500, 1000) {
@@ -310,8 +332,9 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
                     }.start()
                     this.btnScale.setImageResource(R.drawable.ic_baseline_fullscreen_24)
                 }
+
                 4 -> {
-                    this.playerview.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH
+                    this.playerView.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH
                     this.centerText.visibility = View.VISIBLE
                     this.centerText.text = this.getString(R.string.width)
                     object : CountDownTimer(500, 1000) {
@@ -324,6 +347,7 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
                     }.start()
                     this.btnScale.setImageResource(R.drawable.ic_baseline_switch_video_24)
                 }
+
                 else -> {
                     clickCount = -1
                 }
@@ -353,20 +377,20 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
         }
         val focusMode = this.focusCheck.getString("checked", "Unchecked")
         if (focusMode == "checked") {
-            this.playUndisterbed()
+            this.playUndisturbed()
         }
 
         //settings repeat check
         val repeat4all = this.focusCheck.getString("check_repeat", "repeat_false")
-            if (repeat4all=="repeat_true"){
-                repeatMode = true
-                repeat.setImageResource(R.drawable.ic_baseline_repeat_one_24)
-            }
+        if (repeat4all == "repeat_true") {
+            repeatMode = true
+            repeat.setImageResource(R.drawable.ic_baseline_repeat_one_24)
+        }
 
         // screen suspension check
         val wakeCheck = this.focusCheck.getString("wake_status", "wake_true")
-        if (wakeCheck=="wake_true"){
-            playerview.keepScreenOn  = true
+        if (wakeCheck == "wake_true") {
+            playerView.keepScreenOn = true
         }
 
         if (fileName !== null) {
@@ -375,20 +399,18 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
 
         //backGround check
 
-        val backG = focusCheck.getString("backG_status","backG_true")
-        backFlag = backG=="backG_true"
+        val backG = focusCheck.getString("backG_status", "backG_true")
+        backFlag = backG == "backG_true"
         println("background value = $backG")
 
 
-
-
         //default playback speed set
-        val speedSet = focusCheck.getString("speed_value","1")
+        val speedSet = focusCheck.getString("speed_value", "1")
 
-        if (speedSet !=null){
+        if (speedSet != null) {
 
             player.setPlaybackSpeed(speedSet.toFloat())
-            speed.text = getString(R.string.x,speedSet)
+            speed.text = getString(R.string.x, speedSet)
 
         }
 
@@ -406,68 +428,64 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
         this.player.play()
 
 
-
-
     }
 
     private fun initializer() {                              //I N I T I A L I Z A R   C H E C K P O I N T
-        this.playerview = this.findViewById(R.id.exoPlayerView)
-        this.playerview.player = this.player
-        this.videoTitle = this.playerview.findViewById(R.id.videoName)
+        this.playerView = this.findViewById(R.id.exoPlayerView)
+        this.playerView.player = this.player
+        this.videoTitle = this.playerView.findViewById(R.id.videoName)
 
-        this.btnScale = this.playerview.findViewById(R.id.btn_fullscreen)
-        this.rotate = this.playerview.findViewById(R.id.rotate)
+        this.btnScale = this.playerView.findViewById(R.id.btn_fullscreen)
+        this.rotate = this.playerView.findViewById(R.id.rotate)
         this.trackSelect = this.findViewById(R.id.audio_track)
 
-        this.back = this.playerview.findViewById(R.id.back)
-        this.lock = this.playerview.findViewById(R.id.lock)
-        this.soundsBar = this.playerview.findViewById(R.id.progressBar2)
-        this.brightnessBar = this.playerview.findViewById(R.id.progressBar1)
+        this.back = this.playerView.findViewById(R.id.back)
+        this.lock = this.playerView.findViewById(R.id.lock)
+        this.soundsBar = this.playerView.findViewById(R.id.progressBar2)
+        this.brightnessBar = this.playerView.findViewById(R.id.progressBar1)
 
-        this.controls = this.playerview.findViewById(R.id.root)
-        this.totalLayout = this.playerview.findViewById(R.id.totalLayout)
+        this.controls = this.playerView.findViewById(R.id.root)
+        this.totalLayout = this.playerView.findViewById(R.id.totalLayout)
 
-        this.brightLevel = this.playerview.findViewById(R.id.txtInfo)
-        this.infoLayout = this.playerview.findViewById(R.id.info)
-        this.levelIcon = this.playerview.findViewById(R.id.brightnessIcon)
+        this.brightLevel = this.playerView.findViewById(R.id.txtInfo)
+        this.infoLayout = this.playerView.findViewById(R.id.info)
+        this.levelIcon = this.playerView.findViewById(R.id.brightnessIcon)
 
-        this.rewLayout = this.playerview.findViewById(R.id.rewLayout)
-        this.forLayout = this.playerview.findViewById(R.id.forLayout)
+        this.rewLayout = this.playerView.findViewById(R.id.rewLayout)
+        this.forLayout = this.playerView.findViewById(R.id.forLayout)
 
-        this.centerText = this.playerview.findViewById(R.id.centerText)
+        this.centerText = this.playerView.findViewById(R.id.centerText)
 
-        repeat = playerview.findViewById(R.id.repeat)
-        speed = playerview.findViewById(R.id.speed)
+        repeat = playerView.findViewById(R.id.repeat)
+        speed = playerView.findViewById(R.id.speed)
 
 
 
-        forwardText = playerview.findViewById(R.id.txt_fastForwar)
-        rewindText = playerview.findViewById(R.id.txt_fastRewind)
+        forwardText = playerView.findViewById(R.id.txt_fastForwar)
+        rewindText = playerView.findViewById(R.id.txt_fastRewind)
 
         currentUris = ArrayList()
         currentVideoName = ArrayList()
 
-        next = playerview.findViewById(R.id.next)
-        prev = playerview.findViewById(R.id.prev)
-
-
+        next = playerView.findViewById(R.id.next)
+        prev = playerView.findViewById(R.id.prev)
 
 
     }
 
 
-    private fun playUndisterbed() {    //play alone system
+    private fun playUndisturbed() {    //play alone system
         val audioAttributes: AudioAttributes = AudioAttributes.Builder()
-                .setUsage(C.USAGE_MEDIA)
-                .setContentType(C.CONTENT_TYPE_MOVIE)
-                .build()
+            .setUsage(C.USAGE_MEDIA)
+            .setContentType(C.CONTENT_TYPE_MOVIE)
+            .build()
         this.player.setAudioAttributes(audioAttributes, true)
     }
 
     override fun onPause() {                             //O V E R R I D E F U N C T I O N    C H E C K P O I N T
         super.onPause()
         println(backFlag)
-        if (!backFlag){
+        if (!backFlag) {
             this.player.pause()
         }
 
@@ -499,10 +517,11 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
 
     override fun onClick(v: View?) {                             //O N C L I C K   F U N C T I O N   C H E C K P O I N T
         if (v === this.trackSelect && !this.isShowingTrackSelectionDialog
-                && TrackSelectionDialog.willHaveContent(this.trackSelector)) {
+            && TrackSelectionDialog.willHaveContent(this.trackSelector)
+        ) {
             this.isShowingTrackSelectionDialog = true
             val trackSelectionDialog = TrackSelectionDialog.createForTrackSelector(
-                    this.trackSelector  /* onDismissListener= */
+                this.trackSelector  /* onDismissListener= */
             ) { this.isShowingTrackSelectionDialog = false }
             trackSelectionDialog.show(this.supportFragmentManager,  /* tag= */null)
         }
@@ -539,26 +558,32 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
                     player.setPlaybackSpeed(1.25f)
                     speed.text = getString(R.string.speed125)
                 }
+
                 1 -> {
                     player.setPlaybackSpeed(1.5f)
                     speed.text = getString(R.string.speed15)
                 }
+
                 2 -> {
                     player.setPlaybackSpeed(1.75f)
                     speed.text = getString(R.string.speed17)
                 }
+
                 3 -> {
                     player.setPlaybackSpeed(2f)
                     speed.text = getString(R.string.speed2)
                 }
+
                 4 -> {
                     player.setPlaybackSpeed(0.25f)
                     speed.text = getString(R.string.speed025)
                 }
+
                 5 -> {
                     player.setPlaybackSpeed(0.5f)
                     speed.text = getString(R.string.speed05)
                 }
+
                 else -> {
                     count = -1
                     player.setPlaybackSpeed(1f)
@@ -568,10 +593,10 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
             }
             count++
         }
-        if (v==next){
-           playNext()
+        if (v == next) {
+            playNext()
         }
-        if (v==prev){
+        if (v == prev) {
             playPrev()
         }
 
@@ -580,13 +605,13 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
 
     private fun playPrev() {
         try {
-           currentMedia--
+            currentMedia--
             player.stop()
             player.setMediaItem(MediaItem.fromUri(currentUris[currentMedia]))
             videoTitle.text = currentVideoName[currentMedia]
             player.prepare()
             player.playWhenReady
-        }catch (e:Exception){
+        } catch (e: Exception) {
             Toast.makeText(this, "No more going back!", Toast.LENGTH_SHORT).show()
             finish()
         }
@@ -595,14 +620,14 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
 
     private fun playNext() {
         try {
-           currentMedia++
+            currentMedia++
             player.stop()
             player.setMediaItem(MediaItem.fromUri(currentUris[currentMedia]))
             videoTitle.text = currentVideoName[currentMedia]
             player.prepare()
             player.playWhenReady
 
-        }catch (e:Exception){
+        } catch (e: Exception) {
             Toast.makeText(this, "Last Video Played !", Toast.LENGTH_SHORT).show()
             finish()
         }
@@ -618,11 +643,15 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
         this.sharedPreferences.edit().putString("Uri", this.vidUri).apply()
         this.sharedPreferences.edit().putString("videoName", this.vidName).apply()
         this.sharedPreferences.edit().putString("width", this.vidWidth).apply()
-        this.sharedPreferences.edit().putString("position", this.player.currentPosition.toString()).apply()
+        this.sharedPreferences.edit().putString("position", this.player.currentPosition.toString())
+            .apply()
     }
 
-    override fun onTouch(v: View?, event: MotionEvent?): Boolean {                   //O N T O U C H   C H E C K P O I N T
-        this.mGestureDetector.onTouchEvent(event)
+    override fun onTouch(
+        v: View?,
+        event: MotionEvent?
+    ): Boolean {                   //O N T O U C H   C H E C K P O I N T
+        this.mGestureDetector.onTouchEvent(event!!)
         return when (event!!.action) {
             MotionEvent.ACTION_DOWN -> {
                 // We pressed on the left
@@ -634,13 +663,14 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
                     this.rightClicked = true
                 }
                 this.basex = event.x
-                this.basey = event.y
+                this.baseY = event.y
                 true
             }
+
             MotionEvent.ACTION_MOVE -> {
 
                 this.diffX = ceil((event.x - this.basex).toDouble()).toFloat()
-                this.diffY = ceil((this.basey - event.y).toDouble()).toFloat()
+                this.diffY = ceil((this.baseY - event.y).toDouble()).toFloat()
 
                 if (this.rightClicked) {
                     this.prevBrightness = this.upData.getString("brightness", "0.01f")
@@ -697,6 +727,7 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
 
                 true
             }
+
             MotionEvent.ACTION_UP -> {                  // O N  F I N G E R  U P
                 v?.performClick()
                 this.rightClicked = false
@@ -715,14 +746,17 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
 
                 true
             }
+
             MotionEvent.ACTION_CANCEL -> {
                 //code for action cancel
                 true
             }
+
             MotionEvent.ACTION_OUTSIDE -> {
                 //code for action outside
                 true
             }
+
             else -> super.onTouchEvent(event)
 
         }
@@ -731,16 +765,15 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
     }
 
 
-
-    override fun onDown(e: MotionEvent?): Boolean {
+    override fun onDown(e: MotionEvent): Boolean {
         return true
     }
 
-    override fun onShowPress(e: MotionEvent?) {
+    override fun onShowPress(e: MotionEvent) {
 
     }
 
-    override fun onSingleTapUp(e: MotionEvent?): Boolean {
+    override fun onSingleTapUp(e: MotionEvent): Boolean {
 
         if (this.controls.visibility == View.VISIBLE && !this.lockMode) {
             this.controls.visibility = View.GONE
@@ -755,23 +788,20 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
         return true
     }
 
-    override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {
+    override fun onScroll(p0: MotionEvent?, p1: MotionEvent, p2: Float, p3: Float): Boolean {
         return true
     }
-
-    override fun onLongPress(e: MotionEvent?) {
+    override fun onLongPress(e: MotionEvent) {
 
     }
 
-    override fun onFling(e1: MotionEvent?, e2: MotionEvent?, velocityX: Float, velocityY: Float): Boolean {
-        return true
-    }
+    override fun onFling(p0: MotionEvent?, p1: MotionEvent, p2: Float, p3: Float) = true
 
-    override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
+    override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
         return false
     }
 
-    override fun onDoubleTap(e: MotionEvent?): Boolean {
+    override fun onDoubleTap(e: MotionEvent): Boolean {
         val currentPosition = this.player.currentPosition
         if (e!!.x < (this.sWidth / 2)) {
             rewindText.text = getString(R.string.r10)
@@ -787,7 +817,6 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
 
 
             this.player.seekTo(currentPosition - 10000)
-
 
 
             // We pressed on the right
@@ -811,10 +840,7 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
         return true
     }
 
-    override fun onDoubleTapEvent(e: MotionEvent?): Boolean {
-
-        return false
-    }
+    override fun onDoubleTapEvent(p0: MotionEvent) = false
 
     override fun onStart() {
         super.onStart()
@@ -840,7 +866,7 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
         super.onPlaybackStateChanged(state)
     }
 
-    private fun nextPrevHandler():Cursor{
+    private fun nextPrevHandler(): Cursor {
         val resolver: ContentResolver = contentResolver
         val uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
         val orderBy = MediaStore.Video.Media.DEFAULT_SORT_ORDER
@@ -852,10 +878,12 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
                 // query failed, handle error.
                 println("cursor error")
             }
+
             !cursor.moveToFirst() -> {
                 // no media on the device
                 println("no media on device")
             }
+
             else -> {
                 val videoName1 = cursor.getColumnIndex(MediaStore.Video.Media.DISPLAY_NAME)
                 val bucketName = cursor.getColumnIndex(MediaStore.Video.Media.BUCKET_DISPLAY_NAME)
@@ -865,14 +893,14 @@ class PlayerActivity : AppCompatActivity(), View.OnClickListener,
                     val videoName = cursor.getString(videoName1)
                     var bucketName1 = cursor.getString(bucketName)
                     val videoId2 = cursor.getString(videoId)
-                    
-                    if (bucketName1==null){
-                        bucketName1="Internal Storage"
+
+                    if (bucketName1 == null) {
+                        bucketName1 = "Internal Storage"
                     }
                     currentFolder = intent.getStringExtra("currentFolder")
 
-                    if(bucketName1==currentFolder){
-                        currentUris.add(MediaStore.Video.Media.EXTERNAL_CONTENT_URI.toString()+"/$videoId2")
+                    if (bucketName1 == currentFolder) {
+                        currentUris.add(MediaStore.Video.Media.EXTERNAL_CONTENT_URI.toString() + "/$videoId2")
                         currentVideoName.add(videoName)
                     }
 
