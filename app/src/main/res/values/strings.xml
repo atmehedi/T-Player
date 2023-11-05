@@ -87,6 +87,7 @@
     <string name="play_on_background">Play on background</string>
     <string name="play_music_on_backgound">Play Music on backgound</string>
     <string name="backCheck">BackGroundCheck</string>
+    <string name="permissions_not_granted">Permissions not granted</string>
 
 
 </resources>
